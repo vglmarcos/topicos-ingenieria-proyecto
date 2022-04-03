@@ -374,7 +374,7 @@ export class AgregarCotizacionComponent implements OnInit {
                 });
                 this.cotizacion = {
                     id_usuario: 1,
-                    id_cliente: res.id + 1,
+                    id_cliente: res.id,
                     carrito: items,
                     subtotal: total,
                     total: total + (total * .16),
