@@ -18,14 +18,6 @@ export const opciones: IOption[] = [
         color: 'color2',
     },
     {
-        image: 'assets/img/facturas.png',
-        route: '/buscar-cotizacion',
-        image_width: '50px',
-        image_heigth: '50px',
-        tooltip: 'Facturas',
-        color: 'color3',
-    },
-    {
         image: 'assets/img/producto.png',
         route: '/buscar-producto',
         image_width: '50px',

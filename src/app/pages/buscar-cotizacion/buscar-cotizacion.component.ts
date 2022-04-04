@@ -13,6 +13,8 @@ import { ICliente } from 'src/app/models/ICliente';
 import { EditarCotizacionComponent } from './editar-cotizacion/editar-cotizacion.component';
 import { ConfirmarEliminarComponent } from 'src/app/shared/confirmar-eliminar/confirmar-eliminar.component';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
+import { VentaService } from 'src/app/api/venta/venta.service';
+import { IVenta } from 'src/app/models/IVenta';
 
 export interface tablaCotizaciones {
   id: number,
@@ -38,6 +40,7 @@ export class BuscarCotizacionComponent {
   public colorMode: string;
   private COTIZACIONES: ICotizacion[];
   private CLIENTES: ICliente[];
+  private VENTAS: IVenta[];
   private datosTabla: tablaCotizaciones[] = [];
 
   displayedColumns: string[] = ['id', 'nombre', 'fecha', 'estado', 'total', 'editar', 'eliminar'];
@@ -51,7 +54,8 @@ export class BuscarCotizacionComponent {
     public dialog: MatDialog,
     private cotizacionService: CotizacionService,
     private clienteService: ClienteService,
-    public snackBarService: SnackBarService
+    public snackBarService: SnackBarService,
+    private ventaService: VentaService
   ) {
 
     this.iniciarDatos();
@@ -64,6 +68,9 @@ export class BuscarCotizacionComponent {
   }
 
   iniciarDatos() {
+    this.ventaService.obtenerVentasGet().subscribe(ventas => {
+      this.VENTAS = ventas;
+    });
     this.cotizacionService.obtenerCotizacionesGet().subscribe(cotizaciones => {
       this.COTIZACIONES = cotizaciones;
       this.clienteService.obtenerClientesGet().subscribe(clientes => {
@@ -121,8 +128,10 @@ export class BuscarCotizacionComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result.res) {
         this.cotizacionService.eliminarCotizacionDelete(cot).subscribe(res => {
-          this.snackBarService.greenSnackBar('Se ha eliminado la cotizacion');
-          this.iniciarDatos();
+          this.ventaService.eliminarVentaDelete(this.VENTAS.find(venta => venta.id_cotizacion === cot.id)).subscribe(res => {
+            this.snackBarService.greenSnackBar('Se ha eliminado la cotizacion');
+            this.iniciarDatos();
+          });
         });
       } else {
         this.snackBarService.redSnackBar('Eliminación cancelada');

@@ -78,10 +78,11 @@ export class BuscarVentaComponent implements OnInit {
         this.COTIZACIONES = cotizaciones;
         this.clienteService.obtenerClientesGet().subscribe(clientes => {
           this.CLIENTES = clientes;
-  
+
           this.datosTabla = [];
-  
+          console.log(this.COTIZACIONES);
           for (let i = 0; i < this.VENTAS.length; i++) {
+            if (this.buscarClientePorID(this.COTIZACIONES[i].id_cliente)) {
               this.datosTabla.push({
                 nombre_cliente: this.buscarClientePorID(this.COTIZACIONES[i].id_cliente).nombre,
                 estado: this.VENTAS[i].estado,
@@ -89,8 +90,9 @@ export class BuscarVentaComponent implements OnInit {
                 id: this.COTIZACIONES[i].id,
                 total: this.COTIZACIONES[i].total
               });
+            }
           }
-  
+
           this.dataSource = new MatTableDataSource(this.datosTabla);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
@@ -101,6 +103,8 @@ export class BuscarVentaComponent implements OnInit {
   }
 
   buscarClientePorID(id: number): ICliente {
+    console.log(id, this.CLIENTES)
+    console.log(this.CLIENTES.find(cliente => cliente.id === id))
     return this.CLIENTES.find(cliente => cliente.id === id)
   }
 
@@ -144,17 +148,17 @@ export class BuscarVentaComponent implements OnInit {
     });
   }
 
-  onDeleteCotizacion(idCot: number){
+  onDeleteCotizacion(idCot: number) {
     this.cotizacionService.obtenerCotizacionesGet().subscribe(cotizaciones => {
       this.COTIZACIONES = cotizaciones;
       let cotizacionesCliente = this.COTIZACIONES.filter(cotizacion => cotizacion.id === idCot);
-      for (let i = 0; i < cotizacionesCliente.length; i++){
+      for (let i = 0; i < cotizacionesCliente.length; i++) {
         this.cotizacionService.eliminarCotizacionDelete(cotizacionesCliente[i]).subscribe(res => {
         });
       }
     });
   }
-  
+
   editarCotizacion(cotizacion: tablaVentas) {
     let ven = this.COTIZACIONES.find(vent => vent.id === cotizacion.id);
     console.log(ven)
