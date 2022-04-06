@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ColorThemeService } from 'src/app/services/color-theme.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -80,7 +80,7 @@ export class AgregarCotizacionComponent implements OnInit {
     };
 
     public productosCarrito: item[] = [];
-    public dataSource: MatTableDataSource<item>;
+    public dataSource: MatTableDataSource<item> = new MatTableDataSource<item>();
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
@@ -98,7 +98,8 @@ export class AgregarCotizacionComponent implements OnInit {
         private clienteService: ClienteService,
         private cotizacionService: CotizacionService,
         public snackBarService: SnackBarService,
-        private ventaService: VentaService
+        private ventaService: VentaService,
+        private cdr: ChangeDetectorRef
     ) {
         this.actualizarDatos();
         this.colorThemeService.theme.subscribe((theme) => {
@@ -141,7 +142,7 @@ export class AgregarCotizacionComponent implements OnInit {
         this.firstFormGroup = this._formBuilder.group({
             nombreCtrl: ['', Validators.required],
             correoCtrl: ['', [Validators.required, Validators.email]],
-            telCtrl: ['', Validators.required],
+            telCtrl: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern('[0-9]*')]],
             dirCtrl: ['', Validators.required],
         });
         this.secondFormGroup = this._formBuilder.group({
@@ -152,6 +153,10 @@ export class AgregarCotizacionComponent implements OnInit {
             cantidadCtrl: [''],
             totalCtrl: ['0'],
         });
+
+        this.firstFormGroup.controls['telCtrl'].valueChanges.subscribe(_ => {
+            console.log(this.firstFormGroup.controls['telCtrl'].errors)
+        })
     }
 
     private _filter(nombre: string): IProducto[] {
@@ -172,6 +177,8 @@ export class AgregarCotizacionComponent implements OnInit {
         let precio;
         let cantidad;
         let total;
+
+        this.dataSource.paginator = this.paginator;
 
         this.secondFormGroup.controls['nombreCtrl'].valueChanges.subscribe((value) => {
             let producto = this.findProductoByNombre(value);
@@ -260,6 +267,15 @@ export class AgregarCotizacionComponent implements OnInit {
         });
     }
 
+    numberOnly(event) {
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
+
+    }
+
     cancelar() {
         this.dialogRef.close({
             res: "ok"
@@ -294,7 +310,7 @@ export class AgregarCotizacionComponent implements OnInit {
                                 total: parseFloat(this.secondFormGroup.controls['totalCtrl'].value)
                             }
                             this.productosCarrito.push(item);
-                            this.dataSource = new MatTableDataSource(this.productosCarrito);
+                            this.dataSource.data = this.productosCarrito;
 
                             this.snackBarService.greenSnackBar('Se ha agregado el producto a Carrito');
 
@@ -319,6 +335,7 @@ export class AgregarCotizacionComponent implements OnInit {
             this.snackBarService.redSnackBar("Favor de ingresar producto válido");
             console.log('ingresar producto valido')
         }
+        this.cdr.markForCheck();
     }
 
     resetCampos() {
@@ -330,7 +347,7 @@ export class AgregarCotizacionComponent implements OnInit {
         this.secondFormGroup.controls['totalCtrl'].setValue('0');
     }
 
-    deleteItem(id: string) {
+    deleteItem(index: number) {
         const dialogRef = this.dialog.open(ConfirmarEliminarComponent, {
             data: 'Producto del Carrito',
             autoFocus: false
@@ -338,11 +355,11 @@ export class AgregarCotizacionComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result.res) {
+                console.log(index);
                 this.snackBarService.greenSnackBar('Se ha eliminado el producto de carrito');
-                this.productosCarrito = this.productosCarrito.filter(item => item.id_producto !== parseInt(id));
-                this.dataSource = new MatTableDataSource(this.productosCarrito);
-                this.dataSource.paginator = this.paginator;
-
+                this.productosCarrito.splice(index, 1);
+                this.dataSource.data = this.productosCarrito;
+                this.cdr.markForCheck();
             } else {
                 this.snackBarService.redSnackBar('Eliminación cancelada');
                 console.log(`Exit on click outside`);
@@ -397,7 +414,7 @@ export class AgregarCotizacionComponent implements OnInit {
 
     guardarCotizacion() {
         this.cotizacion.estado = this.checked ? 'Completada' : 'Pendiente';
-        if(this.cotizacion.estado == 'Completada') {
+        if (this.cotizacion.estado == 'Completada') {
             this.cotizacionService.agregarCotizacionPost(this.cotizacion).subscribe(res => {
                 console.log('Cotizacion guardada con exito')
                 let venta: IVenta = {
