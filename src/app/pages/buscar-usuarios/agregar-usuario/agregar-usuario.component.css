@@ -77,6 +77,11 @@
     margin-right: 10px;
 }
 
+input.remove-flechitas::-webkit-outer-spin-button,
+input.remove-flechitas::-webkit-inner-spin-button {
+    display: none;
+}
+
 .dark mat-icon {
     color: #ECEFF1 !important;
 }
@@ -150,4 +155,32 @@ table {
     display: flex;
     padding: 20px 20px;
     flex-direction: column;
+}
+
+/*::ng-deep .mat-option {
+    background: #222 !important;
+  }
+
+::ng-deep .mat-option:hover{
+    background: #222 !important;
+}*/
+
+.dark {
+    background: #222 !important;
+    color: white !important;
+}
+
+.dark:hover {
+    background: #3E3E3E !important;
+    color: white !important;
+}
+
+.light {
+    background: white !important;
+    color: #222 !important;
+}
+
+.light:hover {
+    background: #E3E3E3 !important;
+    color: #222 !important;
 }

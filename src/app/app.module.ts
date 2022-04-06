@@ -55,7 +55,7 @@ import { AgregarLaminaComponent } from './pages/almacen/agregar-lamina/agregar-l
 import { EditarLaminaComponent } from './pages/almacen/editar-lamina/editar-lamina.component';
 import { BuscarVentaComponent } from './pages/buscar-venta/buscar-venta.component';
 import { EditarVentaComponent } from './pages/buscar-venta/editar-venta/editar-venta.component';
-
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -106,7 +106,8 @@ import { EditarVentaComponent } from './pages/buscar-venta/editar-venta/editar-v
     MatTabsModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatSelectModule
   ],
   providers: [
     ColorThemeService,

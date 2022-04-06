@@ -52,12 +52,6 @@
     justify-content:flex-end;
 }
 
-
-input.remove-flechitas::-webkit-outer-spin-button,
-input.remove-flechitas::-webkit-inner-spin-button {
-    display: none;
-}
-
 .content {
     width: 100%;
     height: 100%;

@@ -27,14 +27,25 @@
             <div class="row-inputs first-row">
                 <mat-form-field appearance="outline" class="form-input">
                     <mat-label>Teléfono</mat-label>
-                    <input matInput formControlName="telefonoCtrl" required>
+                    <input matInput formControlName="telefonoCtrl" minLength="10" maxLength="10" required>
+                    <mat-error *ngIf="agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('pattern') && !agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('required')" >
+                        El número telefónico no es válido
+                    </mat-error>
+                    <mat-error *ngIf="agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('minlength') && !agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('pattern') ">
+                        El número telefónico debe ser de 10 dígitos.
+                    </mat-error>
                     <mat-error *ngIf="agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('required')">
-                        El teléfono es requerido.
+                        El número telefónico es requerido.
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="form-input">
                     <mat-label>Tipo</mat-label>
-                    <input matInput formControlName="tipoCtrl" required>
+                    <mat-select formControlName="tipoCtrl" [ngClass]='[actualTheme]' required>
+                        <mat-option [class]="colorMode"
+                        *ngFor = "let type of types" [value]="type.value" >
+                        {{type.viewValue}}
+                        </mat-option>
+                    </mat-select>
                     <mat-error *ngIf="agregarUsuarioFormGroup.controls['tipoCtrl'].hasError('required')">
                         El tipo es requerido.
                     </mat-error>

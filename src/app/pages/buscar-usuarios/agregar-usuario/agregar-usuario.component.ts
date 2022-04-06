@@ -5,6 +5,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/api/usuario/usuario.service';
 import { IUsuario } from 'src/app/models/IUsuario';
+import {MatSelectModule} from '@angular/material/select';
+
+interface TypeUser {
+    value: string;
+    viewValue: string;
+}
 
 @Component({
     selector: 'app-agregar-usuario',
@@ -23,6 +29,11 @@ export class AgregarUsuarioComponent implements OnInit {
     public usuario: IUsuario;
 
     public agregarUsuarioFormGroup: FormGroup;
+
+    types: TypeUser[] = [
+        {value: 'Administrador', viewValue: 'Administrador'},
+        {value: 'Empleado', viewValue: 'Empleado'},
+    ];
 
     constructor(
         public dialogRef: MatDialogRef<AgregarUsuarioComponent>,
@@ -52,10 +63,11 @@ export class AgregarUsuarioComponent implements OnInit {
             nombreCtrl: ['', Validators.required],
             tipoCtrl: ['', Validators.required],
             correoCtrl: ['', [Validators.required, Validators.email]],
-            telefonoCtrl: ['', Validators.required],
+            telefonoCtrl: ['',[ Validators.required,Validators.minLength(10), Validators.maxLength(10), Validators.pattern('[0-9]*')]],
             usuarioCtrl: ['', Validators.required],
             contraCtrl: ['', Validators.required],
         });
+
     }
 
     cancelar() {
@@ -65,7 +77,9 @@ export class AgregarUsuarioComponent implements OnInit {
     }
 
     agregarUsuario() {
-        if(!this.agregarUsuarioFormGroup.hasError('required') && !this.agregarUsuarioFormGroup.controls['correoCtrl'].hasError('email')) {
+        if(!this.agregarUsuarioFormGroup.hasError('required') && !this.agregarUsuarioFormGroup.controls['correoCtrl'].hasError('email') && 
+            !this.agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('minlength') && !this.agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('maxlength')
+            && !this.agregarUsuarioFormGroup.controls['telefonoCtrl'].hasError('pattern')) {
             this.usuario = {
                 nombre: this.agregarUsuarioFormGroup.controls['nombreCtrl'].value,
                 tipo: this.agregarUsuarioFormGroup.controls['tipoCtrl'].value,
@@ -74,7 +88,8 @@ export class AgregarUsuarioComponent implements OnInit {
                 usuario: this.agregarUsuarioFormGroup.controls['usuarioCtrl'].value,
                 contra: this.agregarUsuarioFormGroup.controls['contraCtrl'].value,
             };
-            console.log(this.usuario)
+            console.log(this.usuario);
+            console.log(this.usuario.tipo);
             this.usuarioService.agregarUsuarioPost(this.usuario).subscribe(res => {
                 this.dialogRef.close({
                     res: true
