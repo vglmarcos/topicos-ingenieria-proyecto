@@ -29,12 +29,12 @@
     width: 100%;
 }
 
-.mat-tab-content{
+.mat-tab-content {
     padding-top: 20px;
 }
 
 .form-input {
-    width: 48%; 
+    width: 48%;
 }
 
 .select-prod {
@@ -85,7 +85,7 @@
 .example-right-align {
     text-align: right;
 }
-  
+
 input.example-right-align::-webkit-outer-spin-button,
 input.example-right-align::-webkit-inner-spin-button {
     display: none;
@@ -95,7 +95,7 @@ input.remove-flechitas::-webkit-outer-spin-button,
 input.remove-flechitas::-webkit-inner-spin-button {
     display: none;
 }
-  
+
 input.example-right-align {
     -moz-appearance: textfield;
 }
@@ -138,4 +138,9 @@ table {
 
 .margin-top {
     margin-top: 20px;
+}
+
+::ng-deep .mat-step-header[aria-labelledby="disabled_Resi"] {
+    pointer-events: none !important;
+    cursor: not-allowed;
 }

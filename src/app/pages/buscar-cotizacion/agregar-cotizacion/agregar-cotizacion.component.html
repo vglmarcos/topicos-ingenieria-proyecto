@@ -3,7 +3,7 @@
         <h2>Crear Cotización</h2>
     </mat-toolbar>
     <div class="body-modal">
-        <mat-horizontal-stepper linear #stepper>
+        <mat-horizontal-stepper [linear]="true" #stepper>
             <mat-step [stepControl]="firstFormGroup" [editable]="true">
                 <form [formGroup]="firstFormGroup">
                     <ng-template matStepLabel>Datos del cliente</ng-template>
@@ -39,10 +39,14 @@
                             <div class="row-inputs">
                                 <mat-form-field appearance="outline" class="form-input">
                                     <mat-label>Teléfono</mat-label>
-                                    <input class="remove-flechitas" type="number" matInput formControlName="telCtrl" required>
+                                    <input matInput formControlName="telCtrl" required maxlength="10">
                                     <mat-error
-                                        *ngIf="firstFormGroup.controls['telCtrl'].hasError('minlength') && !firstFormGroup.controls['telCtrl'].hasError('required')">
-                                        El número telefónico tiene que tener 10 números.
+                                        *ngIf="firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
+                                        El número telefónico no es válido.
+                                    </mat-error>
+                                    <mat-error
+                                        *ngIf="(firstFormGroup.controls['telCtrl'].hasError('minlength') || firstFormGroup.controls['telCtrl'].hasError('maxlength')) && !firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
+                                        El número telefónico tiene que tener 10 dígitos.
                                     </mat-error>
                                     <mat-error *ngIf="firstFormGroup.controls['telCtrl'].hasError('required')">
                                         El número telefónico es requerido.
@@ -65,7 +69,7 @@
                     </div>
                 </form>
             </mat-step>
-            <mat-step [stepControl]="secondFormGroup" [editable]="true">
+            <mat-step [stepControl]="secondFormGroup" [editable]="true" [completed]="productosCarrito.length > 0">
                 <ng-template matStepLabel>Agregar productos al carrito</ng-template>
                 <mat-tab-group mat-align-tabs="center">
                     <mat-tab label="Agregar Producto">
@@ -157,9 +161,9 @@
 
                             <ng-container matColumnDef="eliminar">
                                 <th mat-header-cell *matHeaderCellDef> Eliminar </th>
-                                <td mat-cell *matCellDef="let element">
+                                <td mat-cell *matCellDef="let i = index">
                                     <button class="table-btn" mat-icon-button mat-button matTooltip="Eliminar Producto"
-                                        (click)="deleteItem(element.id_producto)">
+                                        (click)="deleteItem(i)">
                                         <mat-icon color="warn">delete</mat-icon>
                                     </button>
                                 </td>
@@ -168,15 +172,15 @@
                             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                         </table>
-                        <mat-paginator [pageSizeOptions]="[4]"></mat-paginator>
+                        <mat-paginator #matPaginatorCarrito [pageSizeOptions]="[4, 6, 8]"></mat-paginator>
                     </mat-tab>
                 </mat-tab-group>
                 <div class="footer-stepper">
                     <button mat-button color="warn" matStepperPrevious>Anterior</button>
-                    <button mat-button color="primary" (click)="iniciarCotizacion(stepper)">Siguiente</button>
+                    <button [disabled]="productosCarrito.length <= 0" mat-button color="primary" (click)="iniciarCotizacion(stepper)">Siguiente</button>
                 </div>
             </mat-step>
-            <mat-step [editable]="true">
+            <mat-step [editable]="true" [completed]="productosCarrito.length > 0" [aria-labelledby]="productosCarrito.length <= 0 ? 'disabled_Resi' : null">
                 <ng-template matStepLabel>Finalizar cotización</ng-template>
                 <mat-accordion>
                     <mat-expansion-panel hideToggle>
