@@ -415,18 +415,24 @@ export class EditarCotizacionComponent implements OnInit {
         this.cotizacion.estado = this.checked ? 'Completada' : 'Pendiente';
         if(this.cotizacion.estado == 'Completada') {
             this.cotizacionService.editarCotizacionPut(this.cotizacion).subscribe(res => {
-                console.log('Cotizacion guardada con exito')
                 let venta: IVenta = {
-                    estado: 'Aprobada',
+                    estado: 'En Curso',
                     id_cotizacion: res.id
                 }
                 this.ventaService.agregarVentaPost(venta).subscribe(res => {
-                    console.log('Venta guardada con exito')
+                    console.log('Venta guardada con exito', res)
+                });
+                this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
+                this.dialogRef.close({
+                    res: "realizada"
                 });
             });
-            this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
-            this.dialogRef.close({
-                res: "realizada"
+        } else {
+            this.cotizacionService.agregarCotizacionPost(this.cotizacion).subscribe(_ => {
+                this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
+                this.dialogRef.close({
+                    res: "realizada"
+                });
             });
         }
     }
