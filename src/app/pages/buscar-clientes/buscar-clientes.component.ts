@@ -110,7 +110,7 @@ export class BuscarClientesComponent {
   onDelete(cliente: ICliente) {
     let cli = this.CLIENTES.find(clien => clien.id === cliente.id);
     const dialogRef = this.dialog.open(ConfirmarEliminarComponent, {
-      data: 'Cliente',
+      data: cli.nombre,
       autoFocus: false
     });
 

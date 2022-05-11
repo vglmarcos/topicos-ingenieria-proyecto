@@ -117,15 +117,6 @@ export class AgregarCotizacionComponent implements OnInit {
                     map(value => this._filter(value))
                 );
         });
-
-        // this.clienteService.obtenerClientesGet().subscribe(clientes => {
-        //     this.CLIENTES = clientes;
-        //     this.filteredOptionsClientes = this.firstFormGroup.controls['nombreCtrl'].valueChanges
-        //         .pipe(
-        //             startWith(''),
-        //             map(value => this._filterC(value))
-        //         );
-        // });
     }
 
     viewColor() {
@@ -153,10 +144,6 @@ export class AgregarCotizacionComponent implements OnInit {
             cantidadCtrl: [''],
             totalCtrl: ['0'],
         });
-
-        this.firstFormGroup.controls['telCtrl'].valueChanges.subscribe(_ => {
-            console.log(this.firstFormGroup.controls['telCtrl'].errors)
-        })
     }
 
     private _filter(nombre: string): IProducto[] {

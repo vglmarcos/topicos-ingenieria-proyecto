@@ -45,7 +45,7 @@
             <ng-container matColumnDef="editar">
                 <th mat-header-cell *matHeaderCellDef> Editar </th>
                 <td mat-cell *matCellDef="let row">
-                    <button [disabled]="row.estado === 'completada'" class="table-btn" mat-icon-button mat-button matTooltip="Editar CLiente" (click)="editarClientes(row)">
+                    <button [disabled]="row.estado === 'completada'" class="table-btn" mat-icon-button mat-button matTooltip="Editar Cliente" (click)="editarClientes(row)">
                         <mat-icon class="edit-button" [color]="(row.estado === 'completada') ? 'disabled' : 'primary'">edit</mat-icon>
                     </button>
                 </td>

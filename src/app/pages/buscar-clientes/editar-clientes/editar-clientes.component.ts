@@ -32,6 +32,11 @@ export class EditarClientesComponent implements OnInit {
     direccion: ''
   };
 
+  nombreHasError: boolean;
+  correoHasError: boolean;
+  telHasError: boolean;
+  dirHasError: boolean;
+
   constructor(
     public dialogRef: MatDialogRef<EditarClientesComponent>,
     public dialog: MatDialog,
@@ -43,11 +48,15 @@ export class EditarClientesComponent implements OnInit {
   ) {
 
     this.cliente = this.data;
-
     this.colorThemeService.theme.subscribe((theme) => {
       this.actualTheme = theme;
       this.viewColor();
     });
+
+    this.nombreHasError = false;
+    this.correoHasError = false;
+    this.telHasError = false;
+    this.dirHasError = false;
 
   }
 
@@ -64,7 +73,7 @@ export class EditarClientesComponent implements OnInit {
   ngOnInit(): void {
     this.firstFormGroup = this._formBuilder.group({
       nombreCtrl: ['', Validators.required],
-      telCtrl: ['', Validators.required],
+      telCtrl: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern('[0-9]*')]],
       correoCtrl: ['', [Validators.required, Validators.email]],
       dirCtrl: ['', Validators.required],
     });
@@ -78,28 +87,58 @@ export class EditarClientesComponent implements OnInit {
       this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
       this.firstFormGroup.controls['dirCtrl'].setValue(this.cliente.direccion);
     });
+
+    this.firstFormGroup.controls['nombreCtrl'].valueChanges.subscribe(_ => {
+      if(this.firstFormGroup.controls['nombreCtrl'].hasError('required')) {
+        this.nombreHasError = true;
+      } else {
+        this.nombreHasError = false;
+      }
+    });
+
+    this.firstFormGroup.controls['correoCtrl'].valueChanges.subscribe(_ => {
+      if(this.firstFormGroup.controls['correoCtrl'].hasError('required') || this.firstFormGroup.controls['correoCtrl'].hasError('email')) {
+        this.correoHasError = true;
+      } else {
+        this.correoHasError = false;
+      }
+    });
+
+    this.firstFormGroup.controls['telCtrl'].valueChanges.subscribe(_ => {
+      if(this.firstFormGroup.controls['telCtrl'].hasError('required') || this.firstFormGroup.controls['telCtrl'].hasError('minlength') || this.firstFormGroup.controls['telCtrl'].hasError('maxlength') || this.firstFormGroup.controls['telCtrl'].hasError('pattern')) {
+        this.telHasError = true;
+      } else {
+        this.telHasError = false;
+      }
+    });
+
+    this.firstFormGroup.controls['dirCtrl'].valueChanges.subscribe(_ => {
+      if(this.firstFormGroup.controls['dirCtrl'].hasError('required')) {
+        this.dirHasError = true;
+      } else {
+        this.dirHasError = false;
+      }
+    });
+
   }
 
   guardarCliente() {
-    if(!this.firstFormGroup.controls['nombreCtrl'].hasError('required') && !this.firstFormGroup.controls['correoCtrl'].hasError('required') 
+    if (!this.firstFormGroup.controls['nombreCtrl'].hasError('required') && !this.firstFormGroup.controls['correoCtrl'].hasError('required')
       && !this.firstFormGroup.controls['correoCtrl'].hasError('email') && !this.firstFormGroup.controls['telCtrl'].hasError('required') 
-      && !this.firstFormGroup.controls['dirCtrl'].hasError('required')){
-      console.log(this.firstFormGroup.controls['nombreCtrl'].hasError('required'))
+      && !this.firstFormGroup.controls['telCtrl'].hasError('pattern') && !this.firstFormGroup.controls['telCtrl'].hasError('maxlength') 
+      && !this.firstFormGroup.controls['telCtrl'].hasError('minlength') && !this.firstFormGroup.controls['dirCtrl'].hasError('required')) {
       this.cliente.nombre = this.firstFormGroup.controls['nombreCtrl'].value;
       this.cliente.telefono = this.firstFormGroup.controls['telCtrl'].value;
       this.cliente.correo = this.firstFormGroup.controls['correoCtrl'].value;
       this.cliente.direccion = this.firstFormGroup.controls['dirCtrl'].value;
-  
       this.clienteService.editarClientePut(this.cliente).subscribe(res => {
-  
+        this.snackBarService.greenSnackBar('Cliente editado con éxito');
+        this.dialogRef.close({
+          res: "realizada"
+        });
       });
-      this.snackBarService.greenSnackBar('Cliente editado con éxito');
-      this.dialogRef.close({
-        res: "realizada"
-      });
-    }
-    else {
-      this.snackBarService.redSnackBar('Favor de llenar todos los campos');
+    } else {
+      this.snackBarService.redSnackBar('Favor de llenar correctamente todos los campos.');
     }
   }
 

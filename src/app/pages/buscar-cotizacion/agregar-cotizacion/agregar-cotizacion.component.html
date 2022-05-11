@@ -5,69 +5,90 @@
     <div class="body-modal">
         <mat-horizontal-stepper [linear]="true" #stepper>
             <mat-step [stepControl]="firstFormGroup" [editable]="true">
-                <form [formGroup]="firstFormGroup">
-                    <ng-template matStepLabel>Datos del cliente</ng-template>
-                    <div class="content">
-                        <div class="form-group-client">
-                            <div class="row-inputs first-row">
-                                <mat-form-field appearance="outline" class="form-input">
-                                    <mat-label>Nombre</mat-label>
-                                    <input matInput formControlName="nombreCtrl" required>
-                                    <!-- <mat-autocomplete [class]="actualTheme" #auto="matAutocomplete">
-                                        <mat-option [color]="color" (mouseover)=" color = 'accent'"
-                                            (mouseout)=" color = 'primary'" [ngClass]='[actualTheme]'
-                                            *ngFor="let cliente of filteredOptionsClientes | async" [value]="cliente.nombre">
-                                            {{cliente.nombre}}
-                                        </mat-option>
-                                    </mat-autocomplete> -->
-                                    <mat-error *ngIf="firstFormGroup.controls['nombreCtrl'].hasError('required')">
-                                        El nombre es requerido.
-                                    </mat-error>
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" class="form-input">
-                                    <mat-label>Correo</mat-label>
-                                    <input matInput formControlName="correoCtrl" required>
-                                    <mat-error
-                                        *ngIf="firstFormGroup.controls['correoCtrl'].hasError('email') && !firstFormGroup.controls['correoCtrl'].hasError('required')">
-                                        El correo ingresado no es válido.
-                                    </mat-error>
-                                    <mat-error *ngIf="firstFormGroup.controls['correoCtrl'].hasError('required')">
-                                        El correo es requerido.
-                                    </mat-error>
-                                </mat-form-field>
+                <ng-template matStepLabel>Datos del cliente</ng-template>
+                <mat-tab-group mat-align-tabs="center">
+                    <mat-tab label="Cliente">
+                        <form [formGroup]="firstFormGroup">
+                            <div class="content">
+                                <div class="form-group-client">
+                                    <div class="row-inputs first-row">
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Nombre</mat-label>
+                                            <input matInput formControlName="nombreCtrl" required>
+                                            <!-- <mat-autocomplete [class]="actualTheme" #auto="matAutocomplete">
+                                                <mat-option [color]="color" (mouseover)=" color = 'accent'"
+                                                    (mouseout)=" color = 'primary'" [ngClass]='[actualTheme]'
+                                                    *ngFor="let cliente of filteredOptionsClientes | async" [value]="cliente.nombre">
+                                                    {{cliente.nombre}}
+                                                </mat-option>
+                                            </mat-autocomplete> -->
+                                            <mat-error *ngIf="firstFormGroup.controls['nombreCtrl'].hasError('required')">
+                                                El nombre es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Correo</mat-label>
+                                            <input matInput formControlName="correoCtrl" required>
+                                            <mat-error
+                                                *ngIf="firstFormGroup.controls['correoCtrl'].hasError('email') && !firstFormGroup.controls['correoCtrl'].hasError('required')">
+                                                El correo ingresado no es válido.
+                                            </mat-error>
+                                            <mat-error *ngIf="firstFormGroup.controls['correoCtrl'].hasError('required')">
+                                                El correo es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="row-inputs">
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Teléfono</mat-label>
+                                            <input matInput formControlName="telCtrl" required maxlength="10">
+                                            <mat-error
+                                                *ngIf="firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
+                                                El número telefónico no es válido.
+                                            </mat-error>
+                                            <mat-error
+                                                *ngIf="(firstFormGroup.controls['telCtrl'].hasError('minlength') || firstFormGroup.controls['telCtrl'].hasError('maxlength')) && !firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
+                                                El número telefónico tiene que tener 10 dígitos.
+                                            </mat-error>
+                                            <mat-error *ngIf="firstFormGroup.controls['telCtrl'].hasError('required')">
+                                                El número telefónico es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Lugar de instalación</mat-label>
+                                            <input matInput formControlName="dirCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['dirCtrl'].hasError('required')">
+                                                El lugar de instalación es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row-inputs">
-                                <mat-form-field appearance="outline" class="form-input">
-                                    <mat-label>Teléfono</mat-label>
-                                    <input matInput formControlName="telCtrl" required maxlength="10">
-                                    <mat-error
-                                        *ngIf="firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
-                                        El número telefónico no es válido.
-                                    </mat-error>
-                                    <mat-error
-                                        *ngIf="(firstFormGroup.controls['telCtrl'].hasError('minlength') || firstFormGroup.controls['telCtrl'].hasError('maxlength')) && !firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
-                                        El número telefónico tiene que tener 10 dígitos.
-                                    </mat-error>
-                                    <mat-error *ngIf="firstFormGroup.controls['telCtrl'].hasError('required')">
-                                        El número telefónico es requerido.
-                                    </mat-error>
-                                </mat-form-field>
-                                <mat-form-field appearance="outline" class="form-input">
-                                    <mat-label>Lugar de instalación</mat-label>
-                                    <input matInput formControlName="dirCtrl" required>
-                                    <mat-error *ngIf="firstFormGroup.controls['dirCtrl'].hasError('required')">
-                                        El lugar de instalación es requerido.
-                                    </mat-error>
-                                </mat-form-field>
+                        </form>
+                    </mat-tab>
+                    <mat-tab label="Direcciones">
+                        <form [formGroup]="firstFormGroup">
+                            <div class="content">
+                                <div class="form-group-client">
+                                    <div class="row-inputs first-row">
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Lugar de instalación</mat-label>
+                                            <input matInput formControlName="dirCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['dirCtrl'].hasError('required')">
+                                                El lugar de instalación es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="footer-stepper">
-                            <button mat-button color="warn" (click)="cancelar()">Cancelar</button>
-                            <button mat-button color="primary" (click)="iniciarCliente()"
-                                matStepperNext>Siguiente</button>
-                        </div>
-                    </div>
-                </form>
+                        </form>
+                    </mat-tab>
+                </mat-tab-group>
+                <div class="footer-stepper">
+                    <button mat-button color="warn" (click)="cancelar()">Cancelar</button>
+                    <button mat-button color="primary" (click)="iniciarCliente()"
+                        matStepperNext>Siguiente</button>
+                </div>
             </mat-step>
             <mat-step [stepControl]="secondFormGroup" [editable]="true" [completed]="productosCarrito.length > 0">
                 <ng-template matStepLabel>Agregar productos al carrito</ng-template>

@@ -29,11 +29,14 @@
                     <div class="row-inputs">
                         <mat-form-field appearance="outline" class="form-input">
                             <mat-label>Teléfono</mat-label>
-                            <input class="remove-flechitas" maxLength="10" type="number" matInput
-                                formControlName="telCtrl" required>
+                            <input maxlength="10" matInput formControlName="telCtrl" required>
                             <mat-error
-                                *ngIf="firstFormGroup.controls['telCtrl'].hasError('minlength') && !firstFormGroup.controls['telCtrl'].hasError('required')">
-                                El número telefónico tiene que tener 10 números.
+                                *ngIf="firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
+                                El número telefónico no es válido.
+                            </mat-error>
+                            <mat-error
+                                *ngIf="(firstFormGroup.controls['telCtrl'].hasError('minlength') || firstFormGroup.controls['telCtrl'].hasError('maxlength')) && !firstFormGroup.controls['telCtrl'].hasError('pattern') && !firstFormGroup.controls['telCtrl'].hasError('required')">
+                                El número telefónico tiene que tener 10 dígitos.
                             </mat-error>
                             <mat-error *ngIf="firstFormGroup.controls['telCtrl'].hasError('required')">
                                 El número telefónico es requerido.
@@ -52,7 +55,7 @@
         </form>
         <div class="footer-stepper">
             <button mat-button color="warn" (click)="cancelar()">Cancelar</button>
-            <button mat-button color="primary" (click)="guardarCliente()" >Guardar</button>
+            <button mat-button color="primary" [disabled]="nombreHasError || correoHasError || telHasError || dirHasError" (click)="guardarCliente()">Guardar</button>
         </div>
     </div>
 </div>
