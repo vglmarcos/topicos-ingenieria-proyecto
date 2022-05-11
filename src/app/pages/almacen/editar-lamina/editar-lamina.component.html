@@ -25,14 +25,12 @@
                     <div class="row-inputs">
                         <mat-form-field appearance="outline" class="form-input">
                             <mat-label>Nombre del Proveedor</mat-label>
-                            <input [matAutocomplete]="auto" matInput formControlName="provCtrl" required>
-                            <mat-autocomplete [class]="actualTheme" #auto="matAutocomplete">
-                                <mat-option [color]="color" (mouseover)=" color = 'accent'"
-                                    (mouseout)=" color = 'primary'" [ngClass]='[actualTheme]'
+                            <mat-select formControlName="provCtrl" [ngClass]='[actualTheme]' required>
+                                <mat-option [class]="colorMode"
                                     *ngFor="let proveedor of filteredOptions | async" [value]="proveedor.nombre">
                                     {{proveedor.nombre}}
                                 </mat-option>
-                            </mat-autocomplete>
+                            </mat-select>
                             <mat-error *ngIf="firstFormGroup.controls['provCtrl'].hasError('required')">
                                 El nombre del proveedor es requerido.
                             </mat-error>

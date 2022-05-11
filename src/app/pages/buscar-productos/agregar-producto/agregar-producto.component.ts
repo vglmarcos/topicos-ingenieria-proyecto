@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { ColorThemeService } from 'src/app/services/color-theme.service';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IProducto } from 'src/app/models/IProducto';
+import { ILamina } from 'src/app/models/ILamina';
+import { LaminaService } from 'src/app/api/lamina/lamina.service';
+import { from, Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { ProductoService } from 'src/app/api/producto/producto.service';
 
 @Component({
@@ -20,7 +25,13 @@ export class AgregarProductoComponent implements OnInit {
     public light = 'light';
     public colorMode: string;
 
-    public producto: IProducto;
+    public LAMINAS: ILamina[];
+
+    public producto: IProducto = {
+        nombre: '',
+        tipo: '',
+        precio: 0
+    };
 
     public agregarProductoFormGroup: FormGroup;
 
@@ -29,8 +40,11 @@ export class AgregarProductoComponent implements OnInit {
         public dialog: MatDialog,
         public colorThemeService: ColorThemeService,
         private _formBuilder: FormBuilder,
+        private laminaService: LaminaService,
         private productoService: ProductoService,
+        public snackBarService: SnackBarService,
     ) {
+        this.actualizarDatos();
         this.colorThemeService.theme.subscribe((theme) => {
             this.actualTheme = theme;
             this.viewColor();
@@ -45,6 +59,13 @@ export class AgregarProductoComponent implements OnInit {
             this.colorMode = this.light;
         }
         console.log(this.colorMode);
+    }
+
+    actualizarDatos() {
+        this.laminaService.obtenerLaminasGet().subscribe(laminas => {
+            this.LAMINAS = laminas;
+            console.log(this.LAMINAS);
+        });
     }
 
     ngOnInit() {
@@ -62,17 +83,25 @@ export class AgregarProductoComponent implements OnInit {
     }
 
     agregarProducto() {
-        if(!this.agregarProductoFormGroup.hasError('required')) {
-            this.producto = {
-                nombre: this.agregarProductoFormGroup.controls['nombreCtrl'].value,
-                tipo: this.agregarProductoFormGroup.controls['tipoCtrl'].value,
-                precio: this.agregarProductoFormGroup.controls['precioCtrl'].value,
-            };
+        if (!this.agregarProductoFormGroup.controls['nombreCtrl'].hasError('required') && !this.agregarProductoFormGroup.controls['tipoCtrl'].hasError('required')
+            && !this.agregarProductoFormGroup.controls['precioCtrl'].hasError('required')) {
+            
+            this.producto.nombre = this.agregarProductoFormGroup.controls['nombreCtrl'].value;
+            this.producto.precio = this.agregarProductoFormGroup.controls['precioCtrl'].value;
+            let lam = this.LAMINAS.find(lami => lami.nombre === this.agregarProductoFormGroup.controls['tipoCtrl'].value);
+            this.producto.tipo = lam.nombre;
+
             this.productoService.agregarProductoPost(this.producto).subscribe(res => {
-                this.dialogRef.close({
-                    res: true
-                });
             });
+            this.snackBarService.greenSnackBar('Producto agregado con éxito');
+            this.dialogRef.close({
+                res: true
+            });
+        }
+
+        else {
+            this.snackBarService.redSnackBar('Favor de llenar todos los campos');
+            console.log(this.producto);
         }
     }
 }

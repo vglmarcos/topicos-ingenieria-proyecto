@@ -97,7 +97,7 @@ export class BuscarProductosComponent implements OnInit {
     onDelete(producto: tablaProveedores) {
         let prod = this.PRODUCTOS.find(prod => prod.id === producto.id);
         const dialogRef = this.dialog.open(ConfirmarEliminarComponent, {
-            data: 'Producto',
+            data: producto.nombre,
             autoFocus: false
         });
         dialogRef.afterClosed().subscribe(result => {

@@ -34,7 +34,12 @@
                 </mat-form-field>
                 <mat-form-field appearance="outline" class="form-input">
                     <mat-label>Tipo</mat-label>
-                    <input matInput formControlName="tipoCtrl" required>
+                    <mat-select formControlName="tipoCtrl" [ngClass]= '[actualTheme]' required>
+                        <mat-option [class]="colorMode"
+                        *ngFor="let type of types" [value]="type.value">
+                        {{type.viewValue}}
+                        </mat-option>
+                    </mat-select>
                     <mat-error *ngIf="editarUsuarioFormGroup.controls['tipoCtrl'].hasError('required')">
                         El tipo es requerido.
                     </mat-error>

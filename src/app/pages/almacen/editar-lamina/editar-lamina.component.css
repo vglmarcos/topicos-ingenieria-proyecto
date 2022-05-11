@@ -70,3 +70,23 @@ input.remove-flechitas::-webkit-inner-spin-button {
 .form-input-full {
     width: 100%;
 }
+
+.dark {
+    background: #222 !important;
+    color: white !important;
+}
+
+.dark:hover {
+    background: #3E3E3E !important;
+    color: white !important;
+}
+
+.light {
+    background: white !important;
+    color: #222 !important;
+}
+
+.light:hover {
+    background: #E3E3E3 !important;
+    color: #222 !important;
+}

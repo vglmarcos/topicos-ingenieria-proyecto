@@ -6,6 +6,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/api/usuario/usuario.service';
 import { IUsuario } from 'src/app/models/IUsuario';
 
+interface TypeUser {
+    value: string;
+    viewValue: string;
+}
+
 @Component({
     selector: 'app-editar-usuario',
     templateUrl: './editar-usuario.component.html',
@@ -21,6 +26,11 @@ export class EditarUsuarioComponent implements OnInit {
     public colorMode: string;
 
     public editarUsuarioFormGroup: FormGroup;
+
+    types: TypeUser[] = [
+        {value: 'Administrador', viewValue: 'Administrador'},
+        {value: 'Empleado', viewValue: 'Empleado'},
+    ];
 
     constructor(
         public dialogRef: MatDialogRef<EditarUsuarioComponent>,
