@@ -70,7 +70,7 @@ mat-label, input {
 }
 
 .mat-column-nombre {
-    width: 30% !important;
+    width: 24% !important;
 }
 
 .mat-column-fecha {
@@ -85,12 +85,16 @@ mat-label, input {
     width: 10% !important;
 }
 
-.mat-column-editar {
-    width: 5% !important;
+.mat-column-ver {
+    width: 4% !important;
 }
 
-.mat-column-eliminar {
-    width: 5% !important;
+.mat-column-terminar {
+    width: 6% !important;
+}
+
+.mat-column-cancelar {
+    width: 6% !important;
 }
 
 /* .add-btn:hover{

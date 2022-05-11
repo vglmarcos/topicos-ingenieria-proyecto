@@ -42,22 +42,32 @@
             </ng-container>
 
             <!-- Actions Column -->
-            <ng-container matColumnDef="editar">
-                <th mat-header-cell *matHeaderCellDef> Editar </th>
+            <ng-container matColumnDef="ver">
+                <th mat-header-cell *matHeaderCellDef>Ver</th>
                 <td mat-cell *matCellDef="let row">
-                    <button [disabled]="row.estado === 'Finalizada'" class="table-btn" mat-icon-button mat-button matTooltip="Editar Cotización" (click)="editarCotizacion(row)">
-                        <mat-icon class="edit-button" [color]="(row.estado === 'completada') ? 'disabled' : 'primary'">edit</mat-icon>
+                    <button class="table-btn" mat-icon-button mat-button matTooltip="Ver Venta" (click)="mostrarVenta(row)">
+                        <mat-icon color="primary">remove_red_eye</mat-icon>
                     </button>
                 </td>
             </ng-container>
 
             <!-- Actions Column -->
-            <ng-container matColumnDef="eliminar">
-                <th mat-header-cell *matHeaderCellDef> Eliminar </th>
+            <ng-container matColumnDef="terminar">
+                <th mat-header-cell *matHeaderCellDef>Terminar</th>
                 <td mat-cell *matCellDef="let row">
-                    <button class="table-btn" mat-icon-button mat-button matTooltip="Eliminar Cotización"
-                        (click)="onDelete(row)">
-                        <mat-icon color="warn">delete</mat-icon>
+                    <button [disabled]="row.estado === 'Terminada' || row.estado === 'Cancelada'" class="table-btn" mat-icon-button mat-button matTooltip="Terminar Venta" (click)="terminarVenta(row)">
+                        <mat-icon [color]="(row.estado === 'Terminada' || row.estado === 'Cancelada') ? 'disabled' : 'primary'">done</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="cancelar">
+                <th mat-header-cell *matHeaderCellDef>Cancelar</th>
+                <td mat-cell *matCellDef="let row">
+                    <button [disabled]="row.estado === 'Terminada' || row.estado === 'Cancelada'" class="table-btn" mat-icon-button mat-button matTooltip="Cancelar Venta"
+                        (click)="cancelarVenta(row)">
+                        <mat-icon class="table-btn" [color]="(row.estado === 'Terminada' || row.estado === 'Cancelada') ? 'disabled' : 'warn'">clear</mat-icon>
                     </button>
                 </td>
             </ng-container>

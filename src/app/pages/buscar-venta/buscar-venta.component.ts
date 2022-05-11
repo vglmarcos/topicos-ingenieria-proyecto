@@ -43,7 +43,7 @@ export class BuscarVentaComponent implements OnInit {
   private VENTAS: IVenta[];
   private datosTabla: tablaVentas[] = [];
 
-  displayedColumns: string[] = ['id', 'nombre', 'fecha', 'estado', 'total', 'editar', 'eliminar'];
+  displayedColumns: string[] = ['id', 'nombre', 'fecha', 'estado', 'total', 'ver', 'terminar', 'cancelar'];
   dataSource: MatTableDataSource<tablaVentas>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -127,7 +127,7 @@ export class BuscarVentaComponent implements OnInit {
     }
   }
 
-  onDelete(venta: IVenta) {
+  /*onDelete(venta: IVenta) {
     let ven = this.VENTAS.find(vent => vent.id === venta.id);
     const dialogRef = this.dialog.open(ConfirmarEliminarComponent, {
       data: 'Venta',
@@ -146,9 +146,9 @@ export class BuscarVentaComponent implements OnInit {
         console.log(`Exit on click outside`);
       }
     });
-  }
+  }*/
 
-  onDeleteCotizacion(idCot: number) {
+  /*onDeleteCotizacion(idCot: number) {
     this.cotizacionService.obtenerCotizacionesGet().subscribe(cotizaciones => {
       this.COTIZACIONES = cotizaciones;
       let cotizacionesCliente = this.COTIZACIONES.filter(cotizacion => cotizacion.id === idCot);
@@ -157,9 +157,9 @@ export class BuscarVentaComponent implements OnInit {
         });
       }
     });
-  }
+  }*/
 
-  editarCotizacion(cotizacion: tablaVentas) {
+  /*editarCotizacion(cotizacion: tablaVentas) {
     let ven = this.COTIZACIONES.find(vent => vent.id === cotizacion.id);
     console.log(ven)
     const dialogRef = this.dialog.open(EditarVentaComponent, {
@@ -176,6 +176,43 @@ export class BuscarVentaComponent implements OnInit {
         console.log(`Exit on click outside`);
       }
     });
+  }*/
+
+  mostrarVenta(venta: tablaVentas) {
+    let ven = this.COTIZACIONES.find(vent => vent.id === venta.id);
+    console.log(ven)
+    const dialogRef = this.dialog.open(EditarVentaComponent, {
+      autoFocus: false,
+      data: ven
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (result.res === "realizada") {
+          
+        }
+      } else {
+        console.log(`Exit on click outside`);
+      }
+    });
+  }
+
+  terminarVenta(venta: tablaVentas) {
+    let ven = this.VENTAS.find(vent => vent.id === venta.id);
+    ven.estado = "Terminada";
+    this.ventaService.editarVentaPut(ven).subscribe(_ => {
+      this.snackBarService.greenSnackBar('Venta terminada con éxito.');
+      this.iniciarDatos();
+    }, error => this.snackBarService.redSnackBar(error));
+  }
+
+  cancelarVenta(venta: tablaVentas) {
+    let ven = this.VENTAS.find(vent => vent.id === venta.id);
+    ven.estado = "Cancelada";
+    this.ventaService.editarVentaPut(ven).subscribe(_ => {
+      this.snackBarService.greenSnackBar('Venta cancelada con éxito.');
+      this.iniciarDatos();
+    }, error => this.snackBarService.redSnackBar(error));
   }
 
 }
