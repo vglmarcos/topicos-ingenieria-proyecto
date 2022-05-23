@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ColorThemeService } from 'src/app/services/color-theme.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -21,6 +21,8 @@ import { ConfirmarEliminarComponent } from 'src/app/shared/confirmar-eliminar/co
 import { MatDialog } from '@angular/material/dialog';
 import { VentaService } from 'src/app/api/venta/venta.service';
 import { IVenta } from 'src/app/models/IVenta';
+import { LaminaService } from 'src/app/api/lamina/lamina.service';
+import { ILamina } from 'src/app/models/ILamina';
 
 export interface item {
     id_producto: number,
@@ -55,6 +57,7 @@ export class EditarCotizacionComponent implements OnInit {
 
     public filteredOptions: Observable<IProducto[]>;
     public PRODUCTOS: IProducto[];
+    public LAMINAS: ILamina[];
 
     public checked: boolean = false;
 
@@ -97,7 +100,9 @@ export class EditarCotizacionComponent implements OnInit {
         private clienteService: ClienteService,
         private cotizacionService: CotizacionService,
         public snackBarService: SnackBarService,
-        public ventaService: VentaService
+        public ventaService: VentaService,
+        private laminaService: LaminaService,
+        private cdr: ChangeDetectorRef
     ) {
         this.actualizarDatos();
         this.colorThemeService.theme.subscribe((theme) => {
@@ -105,12 +110,16 @@ export class EditarCotizacionComponent implements OnInit {
             this.viewColor();
         });
 
+        this.laminaService.obtenerLaminasGet().subscribe(laminas => {
+            this.LAMINAS = laminas;
+        });
+
         this.cotizacion = this.data;
-        
+
         this.checked = (this.cotizacion.estado === 'Pendiente') ? false : true;
 
         this.productoService.obtenerProductosGet().subscribe(productos => {
-            for(let i = 0; i < this.data.carrito.length; i++) {
+            for (let i = 0; i < this.data.carrito.length; i++) {
                 let producto = productos.find(producto => producto.id === this.data.carrito[i].id_producto)
                 let item: item = {
                     cantidad: this.data.carrito[i].cantidad,
@@ -277,6 +286,19 @@ export class EditarCotizacionComponent implements OnInit {
 
     }
 
+    onSelectionChange(event) {
+        switch (event.selectedIndex) {
+            case 1:
+                this.iniciarCliente();
+                break;
+            case 2:
+                this.iniciarCotizacion();
+                break;
+            default:
+                break;
+        }
+    }
+
     cancelar() {
         this.dialogRef.close({
             res: "ok"
@@ -310,14 +332,21 @@ export class EditarCotizacionComponent implements OnInit {
                                 precio_unitario: producto.precio,
                                 total: parseFloat(this.secondFormGroup.controls['totalCtrl'].value)
                             }
-                            this.productosCarrito.push(item);
-                            this.dataSource = new MatTableDataSource(this.productosCarrito);
-                            this.dataSource.paginator = this.paginator;
-                            this.index++;
+                            this.PRODUCTOS.forEach(producto => {
+                                if (item.nombre === producto.nombre) {
 
-                            this.snackBarService.greenSnackBar('Se ha agregado el producto a Carrito');
-
-                            this.resetCampos();
+                                    console.log(item.cantidad);
+                                    console.log(this.LAMINAS.find(lamina => lamina.nombre === producto.tipo).cantidad);
+                                    if (item.cantidad > this.LAMINAS.find(lamina => lamina.nombre === producto.tipo).cantidad) {
+                                        this.snackBarService.redSnackBar(`El producto sobrepasa la cantidad en existencias, actualmente existen ${this.LAMINAS.find(lamina => lamina.nombre === producto.tipo).cantidad} ${item.nombre}.`);
+                                    } else {
+                                        this.productosCarrito.push(item);
+                                        this.dataSource.data = this.productosCarrito;
+                                        this.snackBarService.greenSnackBar('Se ha agregado el producto a Carrito');
+                                        this.resetCampos();
+                                    }
+                                }
+                            });
                         } else {
                             this.snackBarService.redSnackBar('La cantidad debe ser mayor a cero');
                             console.log('la cantidad debe ser mayor a cero')
@@ -349,7 +378,7 @@ export class EditarCotizacionComponent implements OnInit {
         this.secondFormGroup.controls['totalCtrl'].setValue('0');
     }
 
-    deleteItem(id: string) {
+    deleteItem(index: number) {
         const dialogRef = this.dialog.open(ConfirmarEliminarComponent, {
             data: 'Producto del Carrito',
             autoFocus: false
@@ -357,10 +386,11 @@ export class EditarCotizacionComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
             if (result.res) {
+                console.log(index);
                 this.snackBarService.greenSnackBar('Se ha eliminado el producto de carrito');
-                this.productosCarrito = this.productosCarrito.filter(item => item.id_producto !== parseInt(id));
-                this.dataSource = new MatTableDataSource(this.productosCarrito);
-                this.dataSource.paginator = this.paginator;
+                this.productosCarrito.splice(index, 1);
+                this.dataSource.data = this.productosCarrito;
+                this.cdr.markForCheck();
 
             } else {
                 this.snackBarService.redSnackBar('Eliminación cancelada');
@@ -369,7 +399,7 @@ export class EditarCotizacionComponent implements OnInit {
         });
     }
 
-    iniciarCotizacion(stepper: MatStepper) {
+    iniciarCotizacion() {
         if (this.productosCarrito.length === 0) {
             console.log("se debe agregar al menos un producto al carrito");
             this.secondFormGroup.setErrors(Validators.required);
@@ -386,7 +416,6 @@ export class EditarCotizacionComponent implements OnInit {
                     subtotal: this.productosCarrito[i].total
                 });
             }
-            console.log(this.cliente);
             this.clienteService.editarClientePut(this.cliente).subscribe(res => {
                 let total = 0;
                 items.forEach(item => {
@@ -398,7 +427,6 @@ export class EditarCotizacionComponent implements OnInit {
                 this.cotizacion.subtotal = total;
                 this.cotizacion.total = total + (total * .16);
                 this.cotizacion.estado = 'Pendiente';
-                stepper.next();
             });
         }
     }
@@ -408,12 +436,11 @@ export class EditarCotizacionComponent implements OnInit {
         this.cliente.telefono = this.firstFormGroup.controls['telCtrl'].value;
         this.cliente.correo = this.firstFormGroup.controls['correoCtrl'].value;
         this.cliente.direccion = this.firstFormGroup.controls['dirCtrl'].value;
-        console.log(this.cliente)
     }
 
     editarCotizacion() {
         this.cotizacion.estado = this.checked ? 'Completada' : 'Pendiente';
-        if(this.cotizacion.estado == 'Completada') {
+        if (this.cotizacion.estado == 'Completada') {
             this.cotizacionService.editarCotizacionPut(this.cotizacion).subscribe(res => {
                 let venta: IVenta = {
                     estado: 'En Curso',
@@ -428,7 +455,7 @@ export class EditarCotizacionComponent implements OnInit {
                 });
             });
         } else {
-            this.cotizacionService.agregarCotizacionPost(this.cotizacion).subscribe(_ => {
+            this.cotizacionService.editarCotizacionPut(this.cotizacion).subscribe(_ => {
                 this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
                 this.dialogRef.close({
                     res: "realizada"

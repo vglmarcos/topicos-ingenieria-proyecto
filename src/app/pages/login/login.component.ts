@@ -4,6 +4,7 @@ import { ColorThemeService } from 'src/app/services/color-theme.service';
 import { FormControl, Validators } from '@angular/forms';
 import { SnackBarService } from 'src/app/services/snack-bar.service';
 import { UsuarioService } from 'src/app/api/usuario/usuario.service';
+import { LaminaService } from 'src/app/api/lamina/lamina.service';
 
 @Component({
   selector: 'app-login',
@@ -32,7 +33,8 @@ export class LoginComponent implements OnInit {
   constructor(public colorThemeService: ColorThemeService,
     private router: Router,
     private usuarioService: UsuarioService,
-    public snackBarService: SnackBarService
+    public snackBarService: SnackBarService,
+    private laminaService: LaminaService
   ) {
     this.colorThemeService.theme.subscribe((theme) => {
       this.actualTheme = theme;
@@ -91,6 +93,19 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/buscar-cotizacion']);
           console.log('ok');
           this.snackBarService.greenSnackBar('Bienvenido a Vitrum');
+          setTimeout(() => {
+            this.laminaService.obtenerLaminasGet().subscribe(laminas => {
+              let advertencia = false;
+              laminas.forEach(lamina => {
+                if(lamina.cantidad < 10) {
+                  advertencia = true;
+                }
+              });
+              if(advertencia) {
+                this.snackBarService.redSnackBar(`Advertencia, baja cantidad de laminas en almacén.`);
+              }
+            });
+          }, 5000);
         } else {
           this.snackBarService.redSnackBar('Usuario o contraseña incorrectos, favor de intentar nuevamente');
         }

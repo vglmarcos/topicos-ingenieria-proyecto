@@ -88,7 +88,7 @@ export class EditarVentaComponent implements OnInit {
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
     displayedColumns: string[] = [
-        'nombre', 'tipo', 'dimensiones', 'cantidad', 'precio_unitario', 'total', 'eliminar'
+        'nombre', 'tipo', 'dimensiones', 'cantidad', 'precio_unitario', 'total'
     ];
 
     constructor(
@@ -116,7 +116,6 @@ export class EditarVentaComponent implements OnInit {
         this.productoService.obtenerProductosGet().subscribe(productos => {
             for(let i = 0; i < this.data.carrito.length; i++) {
                 let producto = productos.find(producto => producto.id === this.data.carrito[i].id_producto);
-                console.log(this.data.carrito[i].id_producto)
                 let item: item = {
                     cantidad: this.data.carrito[i].cantidad,
                     dimensiones: this.data.carrito[i].dimensiones,

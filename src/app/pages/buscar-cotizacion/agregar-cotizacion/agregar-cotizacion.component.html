@@ -3,7 +3,7 @@
         <h2>Crear Cotización</h2>
     </mat-toolbar>
     <div class="body-modal">
-        <mat-horizontal-stepper [linear]="true" #stepper>
+        <mat-horizontal-stepper [linear]="true" (selectionChange)="onSelectionChange($event)" #stepper>
             <mat-step [stepControl]="firstFormGroup" [editable]="true">
                 <ng-template matStepLabel>Datos del cliente</ng-template>
                 <mat-tab-group mat-align-tabs="center">
@@ -79,8 +79,7 @@
                 </mat-tab-group>
                 <div class="footer-stepper">
                     <button mat-button color="warn" (click)="cancelar()">Cancelar</button>
-                    <button mat-button color="primary" (click)="iniciarCliente()"
-                        matStepperNext>Siguiente</button>
+                    <button mat-button color="primary" matStepperNext>Siguiente</button>
                 </div>
             </mat-step>
             <mat-step [stepControl]="secondFormGroup" [editable]="true" [completed]="productosCarrito.length > 0">
@@ -191,10 +190,10 @@
                 </mat-tab-group>
                 <div class="footer-stepper">
                     <button mat-button color="warn" matStepperPrevious>Anterior</button>
-                    <button [disabled]="productosCarrito.length <= 0" mat-button color="primary" (click)="iniciarCotizacion(stepper)">Siguiente</button>
+                    <button [disabled]="productosCarrito.length <= 0" mat-button color="primary" matStepperNext>Siguiente</button>
                 </div>
             </mat-step>
-            <mat-step [editable]="true" [completed]="productosCarrito.length > 0" [aria-labelledby]="productosCarrito.length <= 0 ? 'disabled_Resi' : null">
+            <mat-step [editable]="true" [completed]="productosCarrito.length > 0" [aria-labelledby]="(productosCarrito.length <= 0) ? 'disabled_Resi' : null">
                 <ng-template matStepLabel>Finalizar cotización</ng-template>
                 <mat-accordion>
                     <mat-expansion-panel hideToggle>
@@ -224,7 +223,7 @@
                     </mat-expansion-panel>
                 </mat-accordion>
                 <mat-slide-toggle class="margin-top" color="primary" [(ngModel)]="checked">
-                    Completar Venta
+                    Cotización aprobada
                 </mat-slide-toggle>
                 <div class="footer-stepper">
                     <button mat-button color="warn" matStepperPrevious>Anterior</button>

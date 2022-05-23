@@ -5,6 +5,10 @@
     flex-direction: column;
 }
 
+.info {
+    width: 45%;
+}
+
 .title-modal {
     display: flex;
     align-items: center;
@@ -111,11 +115,11 @@ table {
 }
 
 .mat-column-dimensiones {
-    width: 13% !important;
+    width: 16% !important;
 }
 
 .mat-column-cantidad {
-    width: 12% !important;
+    width: 14% !important;
 }
 
 .mat-column-precio_unitario {
@@ -124,10 +128,6 @@ table {
 
 .mat-column-total {
     width: 12% !important;
-}
-
-.mat-column-eliminar {
-    width: 5% !important;
 }
 
 .margin-top {

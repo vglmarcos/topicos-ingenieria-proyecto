@@ -21,6 +21,8 @@ import { ConfirmarEliminarComponent } from 'src/app/shared/confirmar-eliminar/co
 import { MatDialog } from '@angular/material/dialog';
 import { VentaService } from 'src/app/api/venta/venta.service';
 import { IVenta } from 'src/app/models/IVenta';
+import { LaminaService } from 'src/app/api/lamina/lamina.service';
+import { ILamina } from 'src/app/models/ILamina';
 
 export interface item {
     id_producto: number,
@@ -58,6 +60,7 @@ export class AgregarCotizacionComponent implements OnInit {
 
     public PRODUCTOS: IProducto[];
     public CLIENTES: ICliente[];
+    public LAMINAS: ILamina[];
 
     public checked: boolean = false;
 
@@ -99,6 +102,7 @@ export class AgregarCotizacionComponent implements OnInit {
         private cotizacionService: CotizacionService,
         public snackBarService: SnackBarService,
         private ventaService: VentaService,
+        private laminaService: LaminaService,
         private cdr: ChangeDetectorRef
     ) {
         this.actualizarDatos();
@@ -117,6 +121,9 @@ export class AgregarCotizacionComponent implements OnInit {
                     map(value => this._filter(value))
                 );
         });
+        this.laminaService.obtenerLaminasGet().subscribe(laminas => {
+            this.LAMINAS = laminas;
+        });
     }
 
     viewColor() {
@@ -126,7 +133,6 @@ export class AgregarCotizacionComponent implements OnInit {
         if (this.actualTheme.includes(this.light)) {
             this.colorMode = this.light;
         }
-        console.log(this.colorMode);
     }
 
     ngOnInit() {
@@ -237,7 +243,6 @@ export class AgregarCotizacionComponent implements OnInit {
             if (value) {
                 try {
                     cantidad = parseInt(value);
-                    console.log(cantidad)
                     if (ancho && largo && cantidad && precio) {
                         total = ancho * largo * cantidad * precio;
                         this.secondFormGroup.controls['totalCtrl'].setValue(total);
@@ -252,6 +257,19 @@ export class AgregarCotizacionComponent implements OnInit {
                 this.secondFormGroup.controls['totalCtrl'].setValue('0');
             }
         });
+    }
+
+    onSelectionChange(event) {
+        switch(event.selectedIndex) {
+            case 1:
+                this.iniciarCliente();
+                break;
+            case 2:
+                this.iniciarCotizacion();
+                break;
+            default:
+                break;
+        }
     }
 
     numberOnly(event) {
@@ -296,12 +314,20 @@ export class AgregarCotizacionComponent implements OnInit {
                                 precio_unitario: producto.precio,
                                 total: parseFloat(this.secondFormGroup.controls['totalCtrl'].value)
                             }
-                            this.productosCarrito.push(item);
-                            this.dataSource.data = this.productosCarrito;
-
-                            this.snackBarService.greenSnackBar('Se ha agregado el producto a Carrito');
-
-                            this.resetCampos();
+                            this.PRODUCTOS.forEach(producto => {
+                                if (item.nombre === producto.nombre) {
+                                    console.log(item.cantidad);
+                                    console.log(this.LAMINAS.find(lamina => lamina.nombre === producto.tipo).cantidad);
+                                    if (item.cantidad > this.LAMINAS.find(lamina => lamina.nombre === producto.tipo).cantidad) {
+                                        this.snackBarService.redSnackBar(`El producto sobrepasa la cantidad en existencias, actualmente existen ${this.LAMINAS.find(lamina => lamina.nombre === producto.tipo).cantidad} ${item.nombre}.`);
+                                    } else {
+                                        this.productosCarrito.push(item);
+                                        this.dataSource.data = this.productosCarrito;
+                                        this.snackBarService.greenSnackBar('Se ha agregado el producto a Carrito');
+                                        this.resetCampos();
+                                    }
+                                }
+                            });
                         } else {
                             this.snackBarService.redSnackBar('La cantidad debe ser mayor a cero');
                             console.log('la cantidad debe ser mayor a cero')
@@ -354,7 +380,7 @@ export class AgregarCotizacionComponent implements OnInit {
         });
     }
 
-    iniciarCotizacion(stepper: MatStepper) {
+    iniciarCotizacion() {
         if (this.productosCarrito.length === 0) {
             console.log("se debe agregar al menos un producto al carrito");
             this.secondFormGroup.setErrors(Validators.required);
@@ -384,7 +410,6 @@ export class AgregarCotizacionComponent implements OnInit {
                     total: total + (total * .16),
                     estado: 'Pendiente'
                 }
-                stepper.next();
             });
         }
     }
@@ -396,7 +421,6 @@ export class AgregarCotizacionComponent implements OnInit {
             correo: this.firstFormGroup.controls['correoCtrl'].value,
             direccion: this.firstFormGroup.controls['dirCtrl'].value,
         }
-        console.log(this.cliente)
     }
 
     guardarCotizacion() {
