@@ -8,6 +8,7 @@ import { BuscarUsuariosComponent } from './pages/buscar-usuarios/buscar-usuarios
 import { BuscarProductosComponent } from './pages/buscar-productos/buscar-productos.component';
 import { AlmacenComponent } from './pages/almacen/almacen.component';
 import { BuscarVentaComponent } from './pages/buscar-venta/buscar-venta.component';
+import { ReportesComponent } from './pages/reportes/reportes.component';
 
 const routes: Routes = [
   {
@@ -41,6 +42,10 @@ const routes: Routes = [
   {
     path: 'almacen',
     component: AlmacenComponent
+  },
+  {
+    path: 'reportes',
+    component: ReportesComponent
   },
   {
     path: '',

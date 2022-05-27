@@ -29,13 +29,23 @@ export class EditarClientesComponent implements OnInit {
     nombre: '',
     telefono: '',
     correo: '',
-    direccion: ''
+    direccion: {
+      calle: '',
+      ciudad: '',
+      cod_postal: '',
+      colonia: '',
+      numero: ''
+    }
   };
 
   nombreHasError: boolean;
   correoHasError: boolean;
   telHasError: boolean;
-  dirHasError: boolean;
+  calleHasError: boolean;
+  numeroHasError: boolean;
+  coloniaHasError: boolean;
+  cpHasError: boolean;
+  ciudadHasError: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<EditarClientesComponent>,
@@ -56,8 +66,11 @@ export class EditarClientesComponent implements OnInit {
     this.nombreHasError = false;
     this.correoHasError = false;
     this.telHasError = false;
-    this.dirHasError = false;
-
+    this.calleHasError = false;
+    this.numeroHasError = false;
+    this.coloniaHasError = false;
+    this.cpHasError = false;
+    this.ciudadHasError = false;
   }
 
   viewColor() {
@@ -75,7 +88,11 @@ export class EditarClientesComponent implements OnInit {
       nombreCtrl: ['', Validators.required],
       telCtrl: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern('[0-9]*')]],
       correoCtrl: ['', [Validators.required, Validators.email]],
-      dirCtrl: ['', Validators.required],
+      calleCtrl: ['', Validators.required],
+      numeroCtrl: ['', Validators.required],
+      coloniaCtrl: ['', Validators.required],
+      cpCtrl: ['', Validators.required],
+      ciudadCtrl: ['', Validators.required]
     });
 
     this.clienteService.obtenerClientesGet().subscribe(clientes => {
@@ -85,11 +102,15 @@ export class EditarClientesComponent implements OnInit {
       this.firstFormGroup.controls['nombreCtrl'].setValue(this.cliente.nombre);
       this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
       this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
-      this.firstFormGroup.controls['dirCtrl'].setValue(this.cliente.direccion);
+      this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
+      this.firstFormGroup.controls['ciudadCtrl'].setValue(this.cliente.direccion.ciudad);
+      this.firstFormGroup.controls['cpCtrl'].setValue(this.cliente.direccion.cod_postal);
+      this.firstFormGroup.controls['coloniaCtrl'].setValue(this.cliente.direccion.colonia);
+      this.firstFormGroup.controls['numeroCtrl'].setValue(this.cliente.direccion.numero);
     });
 
     this.firstFormGroup.controls['nombreCtrl'].valueChanges.subscribe(_ => {
-      if(this.firstFormGroup.controls['nombreCtrl'].hasError('required')) {
+      if (this.firstFormGroup.controls['nombreCtrl'].hasError('required')) {
         this.nombreHasError = true;
       } else {
         this.nombreHasError = false;
@@ -97,7 +118,7 @@ export class EditarClientesComponent implements OnInit {
     });
 
     this.firstFormGroup.controls['correoCtrl'].valueChanges.subscribe(_ => {
-      if(this.firstFormGroup.controls['correoCtrl'].hasError('required') || this.firstFormGroup.controls['correoCtrl'].hasError('email')) {
+      if (this.firstFormGroup.controls['correoCtrl'].hasError('required') || this.firstFormGroup.controls['correoCtrl'].hasError('email')) {
         this.correoHasError = true;
       } else {
         this.correoHasError = false;
@@ -105,32 +126,71 @@ export class EditarClientesComponent implements OnInit {
     });
 
     this.firstFormGroup.controls['telCtrl'].valueChanges.subscribe(_ => {
-      if(this.firstFormGroup.controls['telCtrl'].hasError('required') || this.firstFormGroup.controls['telCtrl'].hasError('minlength') || this.firstFormGroup.controls['telCtrl'].hasError('maxlength') || this.firstFormGroup.controls['telCtrl'].hasError('pattern')) {
+      if (this.firstFormGroup.controls['telCtrl'].hasError('required') || this.firstFormGroup.controls['telCtrl'].hasError('minlength') || this.firstFormGroup.controls['telCtrl'].hasError('maxlength') || this.firstFormGroup.controls['telCtrl'].hasError('pattern')) {
         this.telHasError = true;
       } else {
         this.telHasError = false;
       }
     });
-
-    this.firstFormGroup.controls['dirCtrl'].valueChanges.subscribe(_ => {
-      if(this.firstFormGroup.controls['dirCtrl'].hasError('required')) {
-        this.dirHasError = true;
+    
+    this.firstFormGroup.controls['calleCtrl'].valueChanges.subscribe(_ => {
+      if (this.firstFormGroup.controls['calleCtrl'].hasError('required')) {
+        this.calleHasError = true;
       } else {
-        this.dirHasError = false;
+        this.calleHasError = false;
       }
     });
 
+    this.firstFormGroup.controls['numeroCtrl'].valueChanges.subscribe(_ => {
+      if (this.firstFormGroup.controls['numeroCtrl'].hasError('required')) {
+        this.numeroHasError = true;
+      } else {
+        this.numeroHasError = false;
+      }
+    });
+
+    this.firstFormGroup.controls['coloniaCtrl'].valueChanges.subscribe(_ => {
+      if (this.firstFormGroup.controls['coloniaCtrl'].hasError('required')) {
+        this.coloniaHasError = true;
+      } else {
+        this.coloniaHasError = false;
+      }
+    });
+
+    this.firstFormGroup.controls['cpCtrl'].valueChanges.subscribe(_ => {
+      if (this.firstFormGroup.controls['cpCtrl'].hasError('required')) {
+        this.cpHasError = true;
+      } else {
+        this.cpHasError = false;
+      }
+    });
+
+    this.firstFormGroup.controls['ciudadCtrl'].valueChanges.subscribe(_ => {
+      if (this.firstFormGroup.controls['ciudadCtrl'].hasError('required')) {
+        this.ciudadHasError = true;
+      } else {
+        this.ciudadHasError = false;
+      }
+    });
   }
 
   guardarCliente() {
     if (!this.firstFormGroup.controls['nombreCtrl'].hasError('required') && !this.firstFormGroup.controls['correoCtrl'].hasError('required')
-      && !this.firstFormGroup.controls['correoCtrl'].hasError('email') && !this.firstFormGroup.controls['telCtrl'].hasError('required') 
-      && !this.firstFormGroup.controls['telCtrl'].hasError('pattern') && !this.firstFormGroup.controls['telCtrl'].hasError('maxlength') 
-      && !this.firstFormGroup.controls['telCtrl'].hasError('minlength') && !this.firstFormGroup.controls['dirCtrl'].hasError('required')) {
+      && !this.firstFormGroup.controls['correoCtrl'].hasError('email') && !this.firstFormGroup.controls['telCtrl'].hasError('required')
+      && !this.firstFormGroup.controls['telCtrl'].hasError('pattern') && !this.firstFormGroup.controls['telCtrl'].hasError('maxlength')
+      && !this.firstFormGroup.controls['telCtrl'].hasError('minlength') && !this.firstFormGroup.controls['calleCtrl'].hasError('required')
+      && !this.firstFormGroup.controls['numeroCtrl'].hasError('required') && !this.firstFormGroup.controls['cpCtrl'].hasError('required')
+      && !this.firstFormGroup.controls['coloniaCtrl'].hasError('required') && !this.firstFormGroup.controls['ciudadCtrl'].hasError('required')) {
       this.cliente.nombre = this.firstFormGroup.controls['nombreCtrl'].value;
       this.cliente.telefono = this.firstFormGroup.controls['telCtrl'].value;
       this.cliente.correo = this.firstFormGroup.controls['correoCtrl'].value;
-      this.cliente.direccion = this.firstFormGroup.controls['dirCtrl'].value;
+      this.cliente.direccion = {
+        calle: this.firstFormGroup.controls['calleCtrl'].value,
+        ciudad: this.firstFormGroup.controls['ciudadCtrl'].value,
+        cod_postal: this.firstFormGroup.controls['cpCtrl'].value,
+        colonia: this.firstFormGroup.controls['coloniaCtrl'].value,
+        numero: this.firstFormGroup.controls['numeroCtrl'].value
+      };
       this.clienteService.editarClientePut(this.cliente).subscribe(res => {
         this.snackBarService.greenSnackBar('Cliente editado con éxito');
         this.dialogRef.close({

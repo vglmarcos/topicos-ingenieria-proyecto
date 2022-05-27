@@ -55,7 +55,8 @@ import { AgregarLaminaComponent } from './pages/almacen/agregar-lamina/agregar-l
 import { EditarLaminaComponent } from './pages/almacen/editar-lamina/editar-lamina.component';
 import { BuscarVentaComponent } from './pages/buscar-venta/buscar-venta.component';
 import { EditarVentaComponent } from './pages/buscar-venta/editar-venta/editar-venta.component';
-import {MatSelectModule} from '@angular/material/select';
+import { MatSelectModule } from '@angular/material/select';
+import { ReportesComponent } from './pages/reportes/reportes.component';
 
 @NgModule({
   declarations: [
@@ -82,7 +83,8 @@ import {MatSelectModule} from '@angular/material/select';
     AgregarLaminaComponent,
     EditarLaminaComponent,
     BuscarVentaComponent,
-    EditarVentaComponent
+    EditarVentaComponent,
+    ReportesComponent
   ],
   imports: [
     BrowserModule,
