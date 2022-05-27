@@ -14,8 +14,8 @@
                                     <div class="row-inputs first-row">
                                         <mat-form-field appearance="outline" class="form-input">
                                             <mat-label>Nombre</mat-label>
-                                            <input matInput formControlName="nombreClCtrl" [matAutocomplete]="auto" required>
-                                            <mat-autocomplete [class]="actualTheme" #auto="matAutocomplete">
+                                            <input matInput formControlName="nombreClCtrl" [matAutocomplete]="auto1" required>
+                                            <mat-autocomplete [class]="actualTheme" #auto1="matAutocomplete">
                                                 <mat-option [color]="color" (mouseover)=" color = 'accent'"
                                                     (mouseout)=" color = 'primary'" [ngClass]='[actualTheme]'
                                                     *ngFor="let cliente of filteredOptionsClientes | async" [value]="cliente.nombre">

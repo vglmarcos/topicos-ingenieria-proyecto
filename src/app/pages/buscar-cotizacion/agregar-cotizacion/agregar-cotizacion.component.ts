@@ -119,6 +119,15 @@ export class AgregarCotizacionComponent implements OnInit {
     }
 
     actualizarDatos() {
+        this.productoService.obtenerProductosGet().subscribe(productos => {
+            this.PRODUCTOS = productos;
+            this.filteredOptions = this.secondFormGroup.controls['nombreCtrl'].valueChanges
+                .pipe(
+                    startWith(''),
+                    map(value => this._filter(value))
+                );
+        });
+
         this.clienteService.obtenerClientesGet().subscribe(clientes => {
             this.CLIENTES = clientes;
             this.filteredOptionsClientes = this.firstFormGroup.controls['nombreClCtrl'].valueChanges
@@ -128,14 +137,6 @@ export class AgregarCotizacionComponent implements OnInit {
                 );
         });
 
-        this.productoService.obtenerProductosGet().subscribe(productos => {
-            this.PRODUCTOS = productos;
-            this.filteredOptions = this.secondFormGroup.controls['nombreCtrl'].valueChanges
-                .pipe(
-                    startWith(''),
-                    map(value => this._filter(value))
-                );
-        });
         this.laminaService.obtenerLaminasGet().subscribe(laminas => {
             this.LAMINAS = laminas;
         });
@@ -173,13 +174,11 @@ export class AgregarCotizacionComponent implements OnInit {
 
     private _filter(nombre: string): IProducto[] {
         const filterValue = nombre.toLowerCase();
-
         return this.PRODUCTOS.filter(producto => producto.nombre.toLowerCase().includes(filterValue));
     }
 
     private _filterCli(nombreCli: string): ICliente[] {
         const filterValueCliente = nombreCli.toLowerCase();
-
         return this.CLIENTES.filter(cliente => cliente.nombre.toLowerCase().includes(filterValueCliente));
     }
 
@@ -199,15 +198,16 @@ export class AgregarCotizacionComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
 
         this.firstFormGroup.controls['nombreClCtrl'].valueChanges.subscribe((value) => {
-            let cliente = this.findClienteByNombre(value);
-            if (cliente) {
-                this.firstFormGroup.controls['correoCtrl'].setValue(cliente.correo);
-                this.firstFormGroup.controls['telCtrl'].setValue(cliente.telefono);
-                this.firstFormGroup.controls['calleCtrl'].setValue(cliente.direccion.calle);
-                this.firstFormGroup.controls['numeroCtrl'].setValue(cliente.direccion.numero);
-                this.firstFormGroup.controls['coloniaCtrl'].setValue(cliente.direccion.colonia);
-                this.firstFormGroup.controls['cpCtrl'].setValue(cliente.direccion.cod_postal);
-                this.firstFormGroup.controls['ciudadCtrl'].setValue(cliente.direccion.ciudad);
+            this.cliente = this.findClienteByNombre(value);
+            console.log(this.cliente)
+            if (this.cliente) {
+                this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
+                this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
+                this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
+                this.firstFormGroup.controls['numeroCtrl'].setValue(this.cliente.direccion.numero);
+                this.firstFormGroup.controls['coloniaCtrl'].setValue(this.cliente.direccion.colonia);
+                this.firstFormGroup.controls['cpCtrl'].setValue(this.cliente.direccion.cod_postal);
+                this.firstFormGroup.controls['ciudadCtrl'].setValue(this.cliente.direccion.ciudad);
 
             } else {
                 this.firstFormGroup.controls['correoCtrl'].setValue('');
@@ -440,7 +440,7 @@ export class AgregarCotizacionComponent implements OnInit {
             this.secondFormGroup.setErrors(Validators.required);
         } 
         
-        else if (this.cliente._id != 0){
+        else if (this.cliente.id != 0){
             let items: ICarrito[] = [];
             for (let i = 0; i < this.productosCarrito.length; i++) {
                 items.push({
@@ -457,6 +457,7 @@ export class AgregarCotizacionComponent implements OnInit {
             items.forEach(item => {
                 total += item.subtotal
             });
+            console.log(this.cliente)
             this.cotizacion = {
                 id_usuario: 1,
                 id_cliente: this.cliente.id,
@@ -499,6 +500,7 @@ export class AgregarCotizacionComponent implements OnInit {
 
     iniciarCliente() {
         this.cliente = {
+            id: this.cliente.id,
             nombre: this.firstFormGroup.controls['nombreClCtrl'].value,
             telefono: this.firstFormGroup.controls['telCtrl'].value,
             correo: this.firstFormGroup.controls['correoCtrl'].value,
@@ -514,6 +516,7 @@ export class AgregarCotizacionComponent implements OnInit {
 
     guardarCotizacion() {
         this.cotizacion.estado = this.checked ? 'Completada' : 'Pendiente';
+        console.log(this.cotizacion)
         if (this.cotizacion.estado == 'Completada') {
             this.cotizacionService.agregarCotizacionPost(this.cotizacion).subscribe(res => {
                 let venta: IVenta = {
