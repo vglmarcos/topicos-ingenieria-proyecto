@@ -55,7 +55,8 @@ export class AgregarCotizacionComponent implements OnInit {
     public colorMode: string;
 
     public filteredOptions: Observable<IProducto[]>;
-    // public filteredOptionsClientes: Observable<ICliente[]>
+
+    public filteredOptionsClientes: Observable<ICliente[]>;
 
     public PRODUCTOS: IProducto[];
     public CLIENTES: ICliente[];
@@ -118,6 +119,15 @@ export class AgregarCotizacionComponent implements OnInit {
     }
 
     actualizarDatos() {
+        this.clienteService.obtenerClientesGet().subscribe(clientes => {
+            this.CLIENTES = clientes;
+            this.filteredOptionsClientes = this.firstFormGroup.controls['nombreClCtrl'].valueChanges
+                .pipe(
+                    startWith(''),
+                    map(value => this._filterCli(value))
+                );
+        });
+
         this.productoService.obtenerProductosGet().subscribe(productos => {
             this.PRODUCTOS = productos;
             this.filteredOptions = this.secondFormGroup.controls['nombreCtrl'].valueChanges
@@ -142,7 +152,7 @@ export class AgregarCotizacionComponent implements OnInit {
 
     ngOnInit() {
         this.firstFormGroup = this._formBuilder.group({
-            nombreCtrl: ['', Validators.required],
+            nombreClCtrl: ['', Validators.required],
             correoCtrl: ['', [Validators.required, Validators.email]],
             telCtrl: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern('[0-9]*')]],
             calleCtrl: ['', Validators.required],
@@ -167,6 +177,12 @@ export class AgregarCotizacionComponent implements OnInit {
         return this.PRODUCTOS.filter(producto => producto.nombre.toLowerCase().includes(filterValue));
     }
 
+    private _filterCli(nombreCli: string): ICliente[] {
+        const filterValueCliente = nombreCli.toLowerCase();
+
+        return this.CLIENTES.filter(cliente => cliente.nombre.toLowerCase().includes(filterValueCliente));
+    }
+
     // private _filterC(nombre: string): ICliente[] {
     //     const filterValueC = nombre.toLowerCase();
 
@@ -181,6 +197,28 @@ export class AgregarCotizacionComponent implements OnInit {
         let total;
 
         this.dataSource.paginator = this.paginator;
+
+        this.firstFormGroup.controls['nombreClCtrl'].valueChanges.subscribe((value) => {
+            let cliente = this.findClienteByNombre(value);
+            if (cliente) {
+                this.firstFormGroup.controls['correoCtrl'].setValue(cliente.correo);
+                this.firstFormGroup.controls['telCtrl'].setValue(cliente.telefono);
+                this.firstFormGroup.controls['calleCtrl'].setValue(cliente.direccion.calle);
+                this.firstFormGroup.controls['numeroCtrl'].setValue(cliente.direccion.numero);
+                this.firstFormGroup.controls['coloniaCtrl'].setValue(cliente.direccion.colonia);
+                this.firstFormGroup.controls['cpCtrl'].setValue(cliente.direccion.cod_postal);
+                this.firstFormGroup.controls['ciudadCtrl'].setValue(cliente.direccion.ciudad);
+
+            } else {
+                this.firstFormGroup.controls['correoCtrl'].setValue('');
+                this.firstFormGroup.controls['telCtrl'].setValue('');
+                this.firstFormGroup.controls['calleCtrl'].setValue('');
+                this.firstFormGroup.controls['numeroCtrl'].setValue('');
+                this.firstFormGroup.controls['coloniaCtrl'].setValue('');
+                this.firstFormGroup.controls['cpCtrl'].setValue('');
+                this.firstFormGroup.controls['ciudadCtrl'].setValue('');
+            }
+        });
 
         this.secondFormGroup.controls['nombreCtrl'].valueChanges.subscribe((value) => {
             let producto = this.findProductoByNombre(value);
@@ -294,10 +332,17 @@ export class AgregarCotizacionComponent implements OnInit {
         this.dialogRef.close({
             res: "ok"
         });
+
+        console.log(this.firstFormGroup.controls['nombreClCtrl'].value);
+        console.log(this.secondFormGroup.controls['nombreCtrl'].value);
     }
 
     findProductoByNombre(nombre: string): IProducto {
         return this.PRODUCTOS.find(producto => producto.nombre === nombre);
+    }
+
+    findClienteByNombre(nombreCli: string): ICliente {
+        return this.CLIENTES.find(cliente => cliente.nombre === nombreCli);
     }
 
     addCarrito() {
@@ -393,7 +438,36 @@ export class AgregarCotizacionComponent implements OnInit {
         if (this.productosCarrito.length === 0) {
             console.log("se debe agregar al menos un producto al carrito");
             this.secondFormGroup.setErrors(Validators.required);
-        } else {
+        } 
+        
+        else if (this.cliente._id != 0){
+            let items: ICarrito[] = [];
+            for (let i = 0; i < this.productosCarrito.length; i++) {
+                items.push({
+                    id_producto: this.findProductoByNombre(this.productosCarrito[i].nombre).id,
+                    dimensiones: {
+                        largo: this.productosCarrito[i].dimensiones.largo,
+                        ancho: this.productosCarrito[i].dimensiones.ancho
+                    },
+                    cantidad: this.productosCarrito[i].cantidad,
+                    subtotal: this.productosCarrito[i].total
+                });
+            }
+            let total = 0;
+            items.forEach(item => {
+                total += item.subtotal
+            });
+            this.cotizacion = {
+                id_usuario: 1,
+                id_cliente: this.cliente.id,
+                carrito: items,
+                subtotal: total,
+                total: total + (total * .16),
+                estado: 'Pendiente'
+            }
+        } 
+        
+        else {
             let items: ICarrito[] = [];
             for (let i = 0; i < this.productosCarrito.length; i++) {
                 items.push({
@@ -425,7 +499,7 @@ export class AgregarCotizacionComponent implements OnInit {
 
     iniciarCliente() {
         this.cliente = {
-            nombre: this.firstFormGroup.controls['nombreCtrl'].value,
+            nombre: this.firstFormGroup.controls['nombreClCtrl'].value,
             telefono: this.firstFormGroup.controls['telCtrl'].value,
             correo: this.firstFormGroup.controls['correoCtrl'].value,
             direccion: {
