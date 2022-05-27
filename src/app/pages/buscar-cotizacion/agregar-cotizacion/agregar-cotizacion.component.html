@@ -59,16 +59,48 @@
                             </div>
                         </form>
                     </mat-tab>
-                    <mat-tab label="Direcciones">
+                    <mat-tab label="Dirección">
                         <form [formGroup]="firstFormGroup">
                             <div class="content">
                                 <div class="form-group-client">
                                     <div class="row-inputs first-row">
                                         <mat-form-field appearance="outline" class="form-input">
-                                            <mat-label>Lugar de instalación</mat-label>
-                                            <input matInput formControlName="dirCtrl" required>
-                                            <mat-error *ngIf="firstFormGroup.controls['dirCtrl'].hasError('required')">
-                                                El lugar de instalación es requerido.
+                                            <mat-label>Calle</mat-label>
+                                            <input matInput formControlName="calleCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['calleCtrl'].hasError('required')">
+                                                La calle es requerida.
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Número</mat-label>
+                                            <input matInput formControlName="numeroCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['numeroCtrl'].hasError('required')">
+                                                El número es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="row-inputs">
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Colonia</mat-label>
+                                            <input matInput formControlName="coloniaCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['coloniaCtrl'].hasError('required')">
+                                                La colonia es requerida.
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Código Postal</mat-label>
+                                            <input matInput formControlName="cpCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['cpCtrl'].hasError('required')">
+                                                El código postal es requerido.
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="row-inputs">
+                                        <mat-form-field appearance="outline" class="form-input">
+                                            <mat-label>Ciudad</mat-label>
+                                            <input matInput formControlName="ciudadCtrl" required>
+                                            <mat-error *ngIf="firstFormGroup.controls['ciudadCtrl'].hasError('required')">
+                                                La ciudad es requerida.
                                             </mat-error>
                                         </mat-form-field>
                                     </div>
@@ -207,7 +239,8 @@
                         </mat-expansion-panel-header>
                         <p>Correo Electrónico: {{cliente.correo}}</p>
                         <p>Teléfono: {{cliente.telefono}}</p>
-                        <p>Dirección: {{cliente.direccion}}</p>
+                        <p>Dirección: {{cliente.direccion.calle}} #{{cliente.direccion.numero}}, {{cliente.direccion.colonia}}, {{cliente.direccion.ciudad}}</p>
+                        <p>Código Postal: {{cliente.direccion.cod_postal}}</p>
                     </mat-expansion-panel>
                     <mat-expansion-panel hideToggle>
                         <mat-expansion-panel-header>

@@ -38,10 +38,10 @@
                                 </div>
                                 <div class="info">
                                     <p>
-                                        <b>Lugar de instalación</b>
+                                        <b>Dirección</b>
                                     </p>
                                     <p>
-                                        {{cliente.direccion}}
+                                        {{cliente.direccion.calle}} #{{cliente.direccion.numero}}, {{cliente.direccion.colonia}}, {{cliente.direccion.ciudad}}
                                     </p>
                                 </div>
                             </div>
@@ -111,7 +111,8 @@
                         </mat-expansion-panel-header>
                         <p>Correo Electrónico: {{cliente.correo}}</p>
                         <p>Teléfono: {{cliente.telefono}}</p>
-                        <p>Dirección: {{cliente.direccion}}</p>
+                        <p>Dirección: {{cliente.direccion.calle}} #{{cliente.direccion.numero}}, {{cliente.direccion.colonia}}, {{cliente.direccion.ciudad}}</p>
+                        <p>Código Postal: {{cliente.direccion.cod_postal}}</p>
                     </mat-expansion-panel>
                     <mat-expansion-panel hideToggle>
                         <mat-expansion-panel-header>

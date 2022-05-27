@@ -66,7 +66,13 @@ export class EditarVentaComponent implements OnInit {
         nombre: '',
         telefono: '',
         correo: '',
-        direccion: ''
+        direccion: {
+            calle: "",
+            ciudad: "",
+            cod_postal: "",
+            colonia: "",
+            numero: ""
+        }
     };
     public cotizacion: ICotizacion = {
         id_usuario: 0,
@@ -158,16 +164,22 @@ export class EditarVentaComponent implements OnInit {
             nombreCtrl: ['', Validators.required],
             correoCtrl: ['', [Validators.required, Validators.email]],
             telCtrl: ['', [Validators.required, Validators.minLength(10)]],
-            dirCtrl: ['', Validators.required],
+            calleCtrl: ['', Validators.required],
+            numeroCtrl: ['', Validators.required],
+            coloniaCtrl: ['', Validators.required],
+            cpCtrl: ['', Validators.required],
+            ciudadCtrl: ['', Validators.required]
         });
         this.clienteService.obtenerClientesGet().subscribe(clientes => {
-            console.log(this.data)
             this.cliente = clientes.find(cliente => cliente.id === this.data.id_cliente);
-            console.log(this.cliente)
             this.firstFormGroup.controls['nombreCtrl'].setValue(this.cliente.nombre);
             this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
             this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
-            this.firstFormGroup.controls['dirCtrl'].setValue(this.cliente.direccion);
+            this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
+            this.firstFormGroup.controls['ciudadCtrl'].setValue(this.cliente.direccion.ciudad);
+            this.firstFormGroup.controls['cpCtrl'].setValue(this.cliente.direccion.cod_postal);
+            this.firstFormGroup.controls['coloniaCtrl'].setValue(this.cliente.direccion.colonia);
+            this.firstFormGroup.controls['numeroCtrl'].setValue(this.cliente.direccion.numero);
         });
         this.secondFormGroup = this._formBuilder.group({
             nombreCtrl: [''],
@@ -410,8 +422,11 @@ export class EditarVentaComponent implements OnInit {
         this.cliente.nombre = this.firstFormGroup.controls['nombreCtrl'].value;
         this.cliente.telefono = this.firstFormGroup.controls['telCtrl'].value;
         this.cliente.correo = this.firstFormGroup.controls['correoCtrl'].value;
-        this.cliente.direccion = this.firstFormGroup.controls['dirCtrl'].value;
-        console.log(this.cliente)
+        this.cliente.direccion.calle = this.firstFormGroup.controls['calleCtrl'].value;
+        this.cliente.direccion.ciudad = this.firstFormGroup.controls['ciudadCtrl'].value;
+        this.cliente.direccion.cod_postal = this.firstFormGroup.controls['cpCtrl'].value;
+        this.cliente.direccion.colonia = this.firstFormGroup.controls['coloniaCtrl'].value;
+        this.cliente.direccion.numero = this.firstFormGroup.controls['numeroCtrl'].value;
     }
 
     editarCotizacion() {

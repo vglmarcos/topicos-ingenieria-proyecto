@@ -74,7 +74,7 @@ export class BuscarClientesComponent {
           nombre_cliente: this.CLIENTES[i].nombre,
           telefono: this.CLIENTES[i].telefono,
           correo: this.CLIENTES[i].correo,
-          direccion: this.CLIENTES[i].direccion
+          direccion: `${this.CLIENTES[i].direccion.calle} #${this.CLIENTES[i].direccion.numero}, ${this.CLIENTES[i].direccion.colonia}, ${this.CLIENTES[i].direccion.ciudad}`
         });
       }
 

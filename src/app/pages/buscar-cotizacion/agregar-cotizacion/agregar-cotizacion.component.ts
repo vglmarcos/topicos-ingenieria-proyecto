@@ -11,7 +11,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { ICliente } from 'src/app/models/ICliente';
-import { MatStepper } from '@angular/material/stepper';
 import { ICotizacion } from 'src/app/models/ICotizacion';
 import { ICarrito } from 'src/app/models/ICarrito';
 import { ClienteService } from 'src/app/api/cliente/cliente.service';
@@ -71,7 +70,13 @@ export class AgregarCotizacionComponent implements OnInit {
         nombre: '',
         telefono: '',
         correo: '',
-        direccion: ''
+        direccion: {
+            calle: "",
+            ciudad: "",
+            cod_postal: "",
+            colonia: "",
+            numero: ""
+        }
     };
     public cotizacion: ICotizacion = {
         id_usuario: 0,
@@ -140,7 +145,11 @@ export class AgregarCotizacionComponent implements OnInit {
             nombreCtrl: ['', Validators.required],
             correoCtrl: ['', [Validators.required, Validators.email]],
             telCtrl: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(10), Validators.pattern('[0-9]*')]],
-            dirCtrl: ['', Validators.required],
+            calleCtrl: ['', Validators.required],
+            numeroCtrl: ['', Validators.required],
+            coloniaCtrl: ['', Validators.required],
+            cpCtrl: ['', Validators.required],
+            ciudadCtrl: ['', Validators.required]
         });
         this.secondFormGroup = this._formBuilder.group({
             nombreCtrl: [''],
@@ -419,7 +428,13 @@ export class AgregarCotizacionComponent implements OnInit {
             nombre: this.firstFormGroup.controls['nombreCtrl'].value,
             telefono: this.firstFormGroup.controls['telCtrl'].value,
             correo: this.firstFormGroup.controls['correoCtrl'].value,
-            direccion: this.firstFormGroup.controls['dirCtrl'].value,
+            direccion: {
+                calle: this.firstFormGroup.controls['calleCtrl'].value,
+                ciudad: this.firstFormGroup.controls['ciudadCtrl'].value,
+                cod_postal: this.firstFormGroup.controls['cpCtrl'].value,
+                colonia: this.firstFormGroup.controls['coloniaCtrl'].value,
+                numero: this.firstFormGroup.controls['numeroCtrl'].value,
+            },
         }
     }
 
