@@ -1,6 +1,4 @@
-require('dotenv').config();
-
 export const environment = {
   production: true,
-  endpoint: process.env.ENDPOINT
+  endpoint: "https://api-rest-topicos-ingenieria.herokuapp.com"
 };
