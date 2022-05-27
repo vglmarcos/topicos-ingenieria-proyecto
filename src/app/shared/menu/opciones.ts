@@ -56,13 +56,5 @@ export const opciones: IOption[] = [
         image_heigth: '50px',
         tooltip: 'Clientes',
         color: 'color8',
-    },
-    {
-        image: 'assets/img/reportes.png',
-        route: '/reportes',
-        image_width: '50px',
-        image_heigth: '50px',
-        tooltip: 'Reportes',
-        color: 'color9',
     }
 ]
