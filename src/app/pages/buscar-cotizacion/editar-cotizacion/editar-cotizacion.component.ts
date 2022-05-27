@@ -11,7 +11,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { ICliente } from 'src/app/models/ICliente';
-import { MatStepper } from '@angular/material/stepper';
 import { ICotizacion } from 'src/app/models/ICotizacion';
 import { ICarrito } from 'src/app/models/ICarrito';
 import { ClienteService } from 'src/app/api/cliente/cliente.service';
@@ -56,7 +55,9 @@ export class EditarCotizacionComponent implements OnInit {
     public colorMode: string;
 
     public filteredOptions: Observable<IProducto[]>;
+    public filteredOptionsClientes: Observable<ICliente[]>;
     public PRODUCTOS: IProducto[];
+    public CLIENTES: ICliente[];
     public LAMINAS: ILamina[];
 
     public checked: boolean = false;
@@ -116,11 +117,9 @@ export class EditarCotizacionComponent implements OnInit {
             this.viewColor();
         });
 
-        this.laminaService.obtenerLaminasGet().subscribe(laminas => {
-            this.LAMINAS = laminas;
-        });
-
         this.cotizacion = this.data;
+
+        console.log(this.cotizacion)
 
         this.checked = (this.cotizacion.estado === 'Pendiente') ? false : true;
 
@@ -152,6 +151,32 @@ export class EditarCotizacionComponent implements OnInit {
                     map(value => this._filter(value))
                 );
         });
+
+        this.clienteService.obtenerClientesGet().subscribe(clientes => {
+            this.CLIENTES = clientes;
+
+            this.firstFormGroup.controls['nombreClCtrl'].valueChanges.subscribe((value) => {
+                let cliente = this.findClienteByNombre(value);
+                this.cliente = cliente ? cliente : this.cliente;
+                this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
+                this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
+                this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
+                this.firstFormGroup.controls['numeroCtrl'].setValue(this.cliente.direccion.numero);
+                this.firstFormGroup.controls['coloniaCtrl'].setValue(this.cliente.direccion.colonia);
+                this.firstFormGroup.controls['cpCtrl'].setValue(this.cliente.direccion.cod_postal);
+                this.firstFormGroup.controls['ciudadCtrl'].setValue(this.cliente.direccion.ciudad);
+            });
+
+            this.filteredOptionsClientes = this.firstFormGroup.controls['nombreClCtrl'].valueChanges
+                .pipe(
+                    startWith(''),
+                    map(value => this._filterCli(value))
+                );
+        });
+
+        this.laminaService.obtenerLaminasGet().subscribe(laminas => {
+            this.LAMINAS = laminas;
+        });
     }
 
     viewColor() {
@@ -166,7 +191,7 @@ export class EditarCotizacionComponent implements OnInit {
 
     ngOnInit() {
         this.firstFormGroup = this._formBuilder.group({
-            nombreCtrl: ['', Validators.required],
+            nombreClCtrl: ['', Validators.required],
             correoCtrl: ['', [Validators.required, Validators.email]],
             telCtrl: ['', [Validators.required, Validators.minLength(10)]],
             calleCtrl: ['', Validators.required],
@@ -177,7 +202,7 @@ export class EditarCotizacionComponent implements OnInit {
         });
         this.clienteService.obtenerClientesGet().subscribe(clientes => {
             this.cliente = clientes.find(cliente => cliente.id === this.data.id_cliente);
-            this.firstFormGroup.controls['nombreCtrl'].setValue(this.cliente.nombre);
+            this.firstFormGroup.controls['nombreClCtrl'].setValue(this.cliente.nombre);
             this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
             this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
             this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
@@ -200,6 +225,13 @@ export class EditarCotizacionComponent implements OnInit {
         const filterValue = nombre.toLowerCase();
 
         return this.PRODUCTOS.filter(producto => producto.nombre.toLowerCase().includes(filterValue));
+    }
+
+    private _filterCli(nombreCli: string): ICliente[] {
+        const filterValueCliente = nombreCli.toLowerCase();
+        console.log(filterValueCliente)
+        console.log(this.CLIENTES.filter(cliente => cliente.nombre.toLowerCase().includes(filterValueCliente)))
+        return this.CLIENTES.filter(cliente => cliente.nombre.toLowerCase().includes(filterValueCliente));
     }
 
     ngAfterViewInit() {
@@ -321,6 +353,10 @@ export class EditarCotizacionComponent implements OnInit {
         return this.PRODUCTOS.find(producto => producto.nombre === nombre);
     }
 
+    findClienteByNombre(nombreCli: string): ICliente {
+        return this.CLIENTES.find(cliente => cliente.nombre === nombreCli);
+    }
+
     addCarrito() {
         let nombre = this.secondFormGroup.controls['nombreCtrl'].value;
         let producto = this.findProductoByNombre(nombre);
@@ -428,6 +464,7 @@ export class EditarCotizacionComponent implements OnInit {
                     subtotal: this.productosCarrito[i].total
                 });
             }
+            console.log(this.cliente)
             this.clienteService.editarClientePut(this.cliente).subscribe(res => {
                 let total = 0;
                 items.forEach(item => {
@@ -444,19 +481,24 @@ export class EditarCotizacionComponent implements OnInit {
     }
 
     iniciarCliente() {
-        this.cliente.nombre = this.firstFormGroup.controls['nombreCtrl'].value;
-        this.cliente.telefono = this.firstFormGroup.controls['telCtrl'].value;
-        this.cliente.correo = this.firstFormGroup.controls['correoCtrl'].value;
-        this.cliente.direccion = {
-            calle: this.firstFormGroup.controls['calleCtrl'].value,
-            ciudad: this.firstFormGroup.controls['ciudadCtrl'].value,
-            cod_postal: this.firstFormGroup.controls['cpCtrl'].value,
-            colonia: this.firstFormGroup.controls['coloniaCtrl'].value,
-            numero: this.firstFormGroup.controls['numeroCtrl'].value
-        };
+        this.cliente = {
+            _id: this.cliente._id,
+            id: this.cliente.id,
+            nombre: this.firstFormGroup.controls['nombreClCtrl'].value,
+            telefono: this.firstFormGroup.controls['telCtrl'].value,
+            correo: this.firstFormGroup.controls['correoCtrl'].value,
+            direccion: {
+                calle: this.firstFormGroup.controls['calleCtrl'].value,
+                ciudad: this.firstFormGroup.controls['ciudadCtrl'].value,
+                cod_postal: this.firstFormGroup.controls['cpCtrl'].value,
+                colonia: this.firstFormGroup.controls['coloniaCtrl'].value,
+                numero: this.firstFormGroup.controls['numeroCtrl'].value,
+            },
+        }
     }
 
     editarCotizacion() {
+        console.log(this.cotizacion)
         this.cotizacion.estado = this.checked ? 'Completada' : 'Pendiente';
         if (this.cotizacion.estado == 'Completada') {
             this.cotizacionService.editarCotizacionPut(this.cotizacion).subscribe(res => {
@@ -467,14 +509,14 @@ export class EditarCotizacionComponent implements OnInit {
                 this.ventaService.agregarVentaPost(venta).subscribe(res => {
                     console.log('Venta guardada con exito', res)
                 });
-                this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
+                this.snackBarService.greenSnackBar('Cotización guardada con éxito.');
                 this.dialogRef.close({
                     res: "realizada"
                 });
             });
         } else {
             this.cotizacionService.editarCotizacionPut(this.cotizacion).subscribe(_ => {
-                this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
+                this.snackBarService.greenSnackBar('Cotización guardada con éxito.');
                 this.dialogRef.close({
                     res: "realizada"
                 });

@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IProducto } from 'src/app/models/IProducto';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
 
-  private basePath = "http://localhost:3000";
+  private basePath = environment.endpoint;
 
   constructor(private httpClient: HttpClient) { }
 

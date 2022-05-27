@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ICliente } from 'src/app/models/ICliente';
+import { environment } from 'src/environments/environment';
 
 
 export interface respuesta {
@@ -13,7 +14,7 @@ export interface respuesta {
 })
 export class ClienteService {
 
-  private basePath = "http://localhost:3000";
+  private basePath = environment.endpoint;
 
   constructor(private httpClient: HttpClient) { }
 

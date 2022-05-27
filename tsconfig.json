@@ -16,5 +16,13 @@
     {
       "path": "./e2e/tsconfig.json"
     }
-]
+  ],
+  "compilerOptions": {
+    "types": [ "node" ],
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
+    "sourceMap": true,
+    "typeRoots": [ "../node_modules/@types" ]
+  }
 }

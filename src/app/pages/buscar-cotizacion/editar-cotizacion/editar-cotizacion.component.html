@@ -14,15 +14,15 @@
                                     <div class="row-inputs first-row">
                                         <mat-form-field appearance="outline" class="form-input">
                                             <mat-label>Nombre</mat-label>
-                                            <input matInput formControlName="nombreCtrl" required>
-                                            <!-- <mat-autocomplete [class]="actualTheme" #auto="matAutocomplete">
+                                            <input matInput formControlName="nombreClCtrl" [matAutocomplete]="auto1" required>
+                                            <mat-autocomplete [class]="actualTheme" #auto1="matAutocomplete">
                                                 <mat-option [color]="color" (mouseover)=" color = 'accent'"
                                                     (mouseout)=" color = 'primary'" [ngClass]='[actualTheme]'
                                                     *ngFor="let cliente of filteredOptionsClientes | async" [value]="cliente.nombre">
                                                     {{cliente.nombre}}
                                                 </mat-option>
-                                            </mat-autocomplete> -->
-                                            <mat-error *ngIf="firstFormGroup.controls['nombreCtrl'].hasError('required')">
+                                            </mat-autocomplete>
+                                            <mat-error *ngIf="firstFormGroup.controls['nombreClCtrl'].hasError('required')">
                                                 El nombre es requerido.
                                             </mat-error>
                                         </mat-form-field>
@@ -114,7 +114,7 @@
                     <button mat-button color="primary" matStepperNext>Siguiente</button>
                 </div>
             </mat-step>
-            <mat-step [stepControl]="secondFormGroup" [editable]="true">
+            <mat-step [stepControl]="secondFormGroup" [editable]="true" [completed]="productosCarrito.length > 0">
                 <ng-template matStepLabel>Agregar productos al carrito</ng-template>
                 <mat-tab-group mat-align-tabs="center">
                     <mat-tab label="Agregar Producto">
@@ -222,10 +222,10 @@
                 </mat-tab-group>
                 <div class="footer-stepper">
                     <button mat-button color="warn" matStepperPrevious>Anterior</button>
-                    <button mat-button color="primary" matStepperNext>Siguiente</button>
+                    <button [disabled]="productosCarrito.length <= 0" mat-button color="primary" matStepperNext>Siguiente</button>
                 </div>
             </mat-step>
-            <mat-step [editable]="true">
+            <mat-step [editable]="true" [completed]="productosCarrito.length > 0" [aria-labelledby]="(productosCarrito.length <= 0) ? 'disabled_Resi' : null">
                 <ng-template matStepLabel>Finalizar cotización</ng-template>
                 <mat-accordion>
                     <mat-expansion-panel hideToggle>

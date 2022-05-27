@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ICotizacion } from 'src/app/models/ICotizacion';
+import { environment } from 'src/environments/environment';
 
 export interface resultado {
   res: string,
@@ -12,7 +13,7 @@ export interface resultado {
 })
 export class CotizacionService {
 
-  private basePath = "http://localhost:3000";
+  private basePath = environment.endpoint;
 
   constructor(private httpClient: HttpClient) { }
 

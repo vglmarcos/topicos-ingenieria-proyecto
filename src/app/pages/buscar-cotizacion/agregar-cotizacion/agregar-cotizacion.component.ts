@@ -182,12 +182,6 @@ export class AgregarCotizacionComponent implements OnInit {
         return this.CLIENTES.filter(cliente => cliente.nombre.toLowerCase().includes(filterValueCliente));
     }
 
-    // private _filterC(nombre: string): ICliente[] {
-    //     const filterValueC = nombre.toLowerCase();
-
-    //     return this.CLIENTES.filter(cliente => cliente.nombre.toLowerCase().includes(filterValueC));
-    // }
-
     ngAfterViewInit() {
         let ancho;
         let largo;
@@ -198,26 +192,15 @@ export class AgregarCotizacionComponent implements OnInit {
         this.dataSource.paginator = this.paginator;
 
         this.firstFormGroup.controls['nombreClCtrl'].valueChanges.subscribe((value) => {
-            this.cliente = this.findClienteByNombre(value);
-            console.log(this.cliente)
-            if (this.cliente) {
-                this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
-                this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
-                this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
-                this.firstFormGroup.controls['numeroCtrl'].setValue(this.cliente.direccion.numero);
-                this.firstFormGroup.controls['coloniaCtrl'].setValue(this.cliente.direccion.colonia);
-                this.firstFormGroup.controls['cpCtrl'].setValue(this.cliente.direccion.cod_postal);
-                this.firstFormGroup.controls['ciudadCtrl'].setValue(this.cliente.direccion.ciudad);
-
-            } else {
-                this.firstFormGroup.controls['correoCtrl'].setValue('');
-                this.firstFormGroup.controls['telCtrl'].setValue('');
-                this.firstFormGroup.controls['calleCtrl'].setValue('');
-                this.firstFormGroup.controls['numeroCtrl'].setValue('');
-                this.firstFormGroup.controls['coloniaCtrl'].setValue('');
-                this.firstFormGroup.controls['cpCtrl'].setValue('');
-                this.firstFormGroup.controls['ciudadCtrl'].setValue('');
-            }
+            let cliente = this.findClienteByNombre(value);
+            this.cliente = cliente ? cliente : this.cliente;
+            this.firstFormGroup.controls['correoCtrl'].setValue(this.cliente.correo);
+            this.firstFormGroup.controls['telCtrl'].setValue(this.cliente.telefono);
+            this.firstFormGroup.controls['calleCtrl'].setValue(this.cliente.direccion.calle);
+            this.firstFormGroup.controls['numeroCtrl'].setValue(this.cliente.direccion.numero);
+            this.firstFormGroup.controls['coloniaCtrl'].setValue(this.cliente.direccion.colonia);
+            this.firstFormGroup.controls['cpCtrl'].setValue(this.cliente.direccion.cod_postal);
+            this.firstFormGroup.controls['ciudadCtrl'].setValue(this.cliente.direccion.ciudad);
         });
 
         this.secondFormGroup.controls['nombreCtrl'].valueChanges.subscribe((value) => {
@@ -307,7 +290,7 @@ export class AgregarCotizacionComponent implements OnInit {
     }
 
     onSelectionChange(event) {
-        switch(event.selectedIndex) {
+        switch (event.selectedIndex) {
             case 1:
                 this.iniciarCliente();
                 break;
@@ -436,11 +419,9 @@ export class AgregarCotizacionComponent implements OnInit {
 
     iniciarCotizacion() {
         if (this.productosCarrito.length === 0) {
-            console.log("se debe agregar al menos un producto al carrito");
+            this.snackBarService.redSnackBar('Se debe agregar al menos un producto al carrito.');
             this.secondFormGroup.setErrors(Validators.required);
-        } 
-        
-        else if (this.cliente.id != 0){
+        } else if (this.cliente.id) {
             let items: ICarrito[] = [];
             for (let i = 0; i < this.productosCarrito.length; i++) {
                 items.push({
@@ -457,7 +438,6 @@ export class AgregarCotizacionComponent implements OnInit {
             items.forEach(item => {
                 total += item.subtotal
             });
-            console.log(this.cliente)
             this.cotizacion = {
                 id_usuario: 1,
                 id_cliente: this.cliente.id,
@@ -466,9 +446,7 @@ export class AgregarCotizacionComponent implements OnInit {
                 total: total + (total * .16),
                 estado: 'Pendiente'
             }
-        } 
-        
-        else {
+        } else {
             let items: ICarrito[] = [];
             for (let i = 0; i < this.productosCarrito.length; i++) {
                 items.push({
@@ -524,16 +502,16 @@ export class AgregarCotizacionComponent implements OnInit {
                     id_cotizacion: res.id
                 }
                 this.ventaService.agregarVentaPost(venta).subscribe(res => {
-                    console.log('Venta guardada con exito', res)
+                    console.log('Venta guardada con éxito.', res)
                 });
-                this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
+                this.snackBarService.greenSnackBar('Cotización guardada con éxito.');
                 this.dialogRef.close({
                     res: "realizada"
                 });
             });
         } else {
             this.cotizacionService.agregarCotizacionPost(this.cotizacion).subscribe(_ => {
-                this.snackBarService.greenSnackBar('Cotizacion guardada con éxito');
+                this.snackBarService.greenSnackBar('Cotización guardada con éxito.');
                 this.dialogRef.close({
                     res: "realizada"
                 });

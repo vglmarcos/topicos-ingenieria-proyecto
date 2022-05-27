@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
 import { UsuarioService } from 'src/app/api/usuario/usuario.service';
 import { IUsuario } from 'src/app/models/IUsuario';
 

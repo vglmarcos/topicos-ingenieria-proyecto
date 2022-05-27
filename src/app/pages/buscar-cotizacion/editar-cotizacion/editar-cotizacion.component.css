@@ -133,3 +133,8 @@ table {
 .margin-top {
     margin-top: 20px;
 }
+
+::ng-deep .mat-step-header[aria-labelledby="disabled_Resi"] {
+    pointer-events: none !important;
+    cursor: not-allowed;
+}

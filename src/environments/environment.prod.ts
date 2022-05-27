@@ -1,3 +1,6 @@
+require('dotenv').config();
+
 export const environment = {
-  production: true
+  production: true,
+  endpoint: process.env.ENDPOINT
 };
